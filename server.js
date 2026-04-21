@@ -1,10 +1,39 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Serve static files from public/ (index.html, JSON, images)
+// ====== AUTO-EXTRACT IMAGES FROM ZIP ======
+function extractImagesIfNeeded() {
+  const imagesDir = path.join(__dirname, 'public', 'images');
+  const zipPath = path.join(__dirname, 'public', 'images.zip');
+
+  // Agar images papkasi yo'q yoki bo'sh bo'lsa — ZIP dan ochish
+  if (!fs.existsSync(imagesDir) || fs.readdirSync(imagesDir).length === 0) {
+    if (fs.existsSync(zipPath)) {
+      console.log('📦 Rasmlarni images.zip dan ochish...');
+      if (!fs.existsSync(imagesDir)) fs.mkdirSync(imagesDir, { recursive: true });
+
+      const AdmZip = require('adm-zip');
+      const zip = new AdmZip(zipPath);
+      zip.extractAllTo(imagesDir, true);
+
+      const count = fs.readdirSync(imagesDir).length;
+      console.log(`✅ ${count} ta rasm ochildi!`);
+    } else {
+      console.log('⚠️  images.zip topilmadi, rasmlar yuklanmaydi');
+    }
+  } else {
+    const count = fs.readdirSync(imagesDir).filter(f => /\.(webp|png|jpg)$/i.test(f)).length;
+    console.log(`🖼️  ${count} ta rasm mavjud`);
+  }
+}
+
+extractImagesIfNeeded();
+
+// Serve static files from public/
 app.use(express.static(path.join(__dirname, 'public'), {
   maxAge: '1h',
   setHeaders: (res, filePath) => {

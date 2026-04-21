@@ -16,6 +16,7 @@ swap_images.js
 download_images.js
 update_json_with_hd.js
 public/images_old/
+public/images/
 hd_rasmlar/
 hd_rasmlar_tmp/
 rasmlar/
