@@ -11,3 +11,16 @@ debug.js
 pdd_savollar.json
 pdd_savollar.csv
 photo_*.jpg
+compress_images.js
+swap_images.js
+download_images.js
+update_json_with_hd.js
+public/images_old/
+hd_rasmlar/
+hd_rasmlar_tmp/
+rasmlar/
+yangi/
+PDD_Rasmlar_UltraHD_Tayyor.zip
+pdd_questions.csv
+pdd_questions.json
+pdd_savollar_barchasi.csv

@@ -4,12 +4,15 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Serve static files from current directory
+// Serve static files from public/ (index.html, JSON, images)
 app.use(express.static(path.join(__dirname, 'public'), {
   maxAge: '1h',
   setHeaders: (res, filePath) => {
     if (filePath.endsWith('.json')) {
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    }
+    if (filePath.match(/\.(png|webp|jpg|jpeg)$/)) {
+      res.setHeader('Cache-Control', 'public, max-age=86400');
     }
   }
 }));

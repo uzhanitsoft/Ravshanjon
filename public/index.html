@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="uz">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PDD Test Manager — Yo'l Harakati Qoidalari</title>
+  <title>PDD Test Manager вЂ” Yo'l Harakati Qoidalari</title>
   <meta name="description" content="O'zbekiston PDD savollar bazasini boshqarish va test qilish ilovasi">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -597,17 +597,17 @@
 <div class="app" id="app">
   <!-- Header -->
   <div class="header">
-    <h1>🚗 PDD Test Manager</h1>
-    <p>Yo'l harakati qoidalari — savollar bazasini boshqarish</p>
+    <h1>&#x1F697; PDD Test Manager</h1>
+    <p>Yo'l harakati qoidalari &#8212; savollar bazasini boshqarish</p>
   </div>
 
   <!-- Tabs -->
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('main')" id="tab-main">
-      📋 Asosiy <span class="badge" id="count-main">0</span>
+      &#x1F4CB; Asosiy <span class="badge" id="count-main">0</span>
     </button>
     <button class="tab-btn" onclick="switchTab('exc')" id="tab-exc">
-      ⚠️ Istisnolar <span class="badge" id="count-exc">0</span>
+      &#x26A0;&#xFE0F; Istisnolar <span class="badge" id="count-exc">0</span>
     </button>
   </div>
 
@@ -617,13 +617,13 @@
 
 <!-- Download Bar -->
 <div class="download-bar" id="download-bar" style="display:none">
-  <button class="dl-btn" onclick="downloadJSON('main')" id="dl-main">⬇ Asosiy bazani yuklab olish</button>
-  <button class="dl-btn exc" onclick="downloadJSON('exc')" id="dl-exc">⬇ Istisnolarni yuklab olish</button>
+  <button class="dl-btn" onclick="downloadJSON('main')" id="dl-main">&#x2B07; Asosiy bazani yuklab olish</button>
+  <button class="dl-btn exc" onclick="downloadJSON('exc')" id="dl-exc">&#x2B07; Istisnolarni yuklab olish</button>
 </div>
 
 <script>
 // ====== STATE ======
-const state = {
+let state = {
   mainQuestions: [],
   excQuestions: [],
   currentTab: 'main',
@@ -663,7 +663,45 @@ function showToast(msg, type='info') {
   setTimeout(() => t.remove(), 3000);
 }
 
-// ====== TAB SWITCHING ======
+
+// ====== LOCAL STORAGE ======
+function saveState() {
+  localStorage.setItem('pdd_state', JSON.stringify({
+    mainQuestions: state.mainQuestions,
+    excQuestions: state.excQuestions,
+    currentTab: state.currentTab,
+    currentIndex: state.currentIndex,
+    answered: state.answered,
+    score: state.score
+  }));
+}
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('pdd_state');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed.mainQuestions) state.mainQuestions = parsed.mainQuestions;
+      if (parsed.excQuestions) state.excQuestions = parsed.excQuestions;
+      if (parsed.currentTab) state.currentTab = parsed.currentTab;
+      if (parsed.currentIndex) state.currentIndex = parsed.currentIndex;
+      if (parsed.answered) state.answered = parsed.answered;
+      if (parsed.score) state.score = parsed.score;
+      return true;
+    }
+  } catch (e) {
+    console.error('State load error', e);
+  }
+  return false;
+}
+
+function clearState() {
+    if(confirm('Barcha saqlangan malumotlarni va ozgarishlarni ochirib, boshidan boshlamoqchimisiz?')) {
+        localStorage.removeItem('pdd_state');
+        location.reload();
+    }
+}
+// ====== TAB SWITCHING =======
 function switchTab(tab) {
   state.currentTab = tab;
   state.currentIndex = 0;
@@ -757,7 +795,7 @@ function moveQuestion(qId) {
   if (src.length === 0) state.currentIndex = 0;
   updateCounts();
   const target = state.currentTab === 'main' ? 'Istisnolar' : 'Asosiy';
-  showToast(`Savol #${q.id} → ${target}ga ko'chirildi`, 'success');
+  showToast(`Savol #${q.id} в†’ ${target}ga ko'chirildi`, 'success');
   render();
 }
 
@@ -832,7 +870,7 @@ function showResults() {
   const total = Object.keys(state.answered).length;
   if (!total) return;
   const pct = Math.round((state.score.correct / total) * 100);
-  const emoji = pct >= 80 ? '🎉' : pct >= 50 ? '😊' : '😔';
+  const emoji = pct >= 80 ? 'рџЋ‰' : pct >= 50 ? 'рџЉ' : 'рџ”';
   const msg = pct >= 80 ? 'Ajoyib natija!' : pct >= 50 ? 'Yomon emas!' : 'Ko\'proq mashq qiling!';
 
   const overlay = document.createElement('div');
@@ -844,7 +882,7 @@ function showResults() {
       <p>${msg}</p>
       <div class="score">${pct}%<span> (${state.score.correct}/${total})</span></div>
       <div style="margin-top:8px; font-size:14px; color:var(--text2)">
-        ✅ To'g'ri: ${state.score.correct} &nbsp; ❌ Xato: ${state.score.wrong}
+        вњ… To'g'ri: ${state.score.correct} &nbsp; вќЊ Xato: ${state.score.wrong}
       </div>
       <button class="nav-btn" style="margin-top:24px; width:100%" onclick="this.closest('.result-overlay').remove()">Yopish</button>
     </div>
@@ -873,7 +911,7 @@ function renderUploadZone() {
          ondragover="event.preventDefault(); this.classList.add('drag-over')"
          ondragleave="this.classList.remove('drag-over')"
          ondrop="event.preventDefault(); this.classList.remove('drag-over'); handleFile(event.dataTransfer.files[0])">
-      <div class="icon">📁</div>
+      <div class="icon">рџ“Ѓ</div>
       <h3>JSON faylni yuklang</h3>
       <p>Fayl tanlash uchun bosing yoki shu yerga tashlang</p>
       <input type="file" id="file-input" accept=".json" onchange="handleFile(this.files[0])">
@@ -902,10 +940,10 @@ function renderQuestion() {
 
     <!-- Mode Bar -->
     <div class="mode-bar">
-      <button class="mode-btn ${state.mode==='test'?'active':''}" onclick="state.mode='test'; render()">🧪 Test</button>
-      <button class="mode-btn ${state.mode==='list'?'active':''}" onclick="state.mode='list'; render()">📃 Ro'yxat</button>
+      <button class="mode-btn ${state.mode==='test'?'active':''}" onclick="state.mode='test'; render()">рџ§Є Test</button>
+      <button class="mode-btn ${state.mode==='list'?'active':''}" onclick="state.mode='list'; render()">рџ“ѓ Ro'yxat</button>
       <div class="spacer"></div>
-      <button class="mode-btn" onclick="document.getElementById('file-input2').click()">📁 Fayl yuklash</button>
+      <button class="mode-btn" onclick="document.getElementById('file-input2').click()">рџ“Ѓ Fayl yuklash</button>
       <input type="file" id="file-input2" accept=".json" style="display:none" onchange="handleFile(this.files[0])">
     </div>
 
@@ -930,8 +968,8 @@ function renderQuestion() {
     <div class="question-card" key="${q.id}">
       <div class="q-header">
         <span class="q-number">Savol ${state.currentIndex+1} / ${questions.length}</span>
-        <span class="q-bilet">Bilet #${q.bilet_id} • ID: ${q.id}</span>
-        <button class="q-move-btn" onclick="moveQuestion(${q.id})">↗ ${otherTab} ko'chirish</button>
+        <span class="q-bilet">Bilet #${q.bilet_id} вЂў ID: ${q.id}</span>
+        <button class="q-move-btn" onclick="moveQuestion(${q.id})">в†— ${otherTab} ko'chirish</button>
       </div>
 
       <div class="q-text">${escapeHtml(q.savol)}</div>
@@ -958,15 +996,15 @@ function renderQuestion() {
         background: ${ans.correct ? 'var(--green-bg)' : 'var(--red-bg)'};
         border: 1px solid ${ans.correct ? 'var(--green-border)' : 'var(--red-border)'};
         color: ${ans.correct ? 'var(--green)' : 'var(--red)'}">
-        ${ans.correct ? '✅ To\'g\'ri javob!' : `❌ Xato! To'g'ri javob: ${letters[correctIdx]}. ${escapeHtml(q.answers[correctIdx].text)}`}
+        ${ans.correct ? 'вњ… To\'g\'ri javob!' : `вќЊ Xato! To'g'ri javob: ${letters[correctIdx]}. ${escapeHtml(q.answers[correctIdx].text)}`}
       </div>` : ''}
     </div>
 
     <!-- Navigation -->
     <div class="nav-bar">
-      <button class="nav-btn secondary" onclick="prevQuestion()" ${state.currentIndex===0?'disabled':''}>← Oldingi</button>
+      <button class="nav-btn secondary" onclick="prevQuestion()" ${state.currentIndex===0?'disabled':''}>в†ђ Oldingi</button>
       <button class="nav-btn" onclick="nextQuestion()">
-        ${state.currentIndex < questions.length-1 ? 'Keyingi →' : '🏁 Yakunlash'}
+        ${state.currentIndex < questions.length-1 ? 'Keyingi в†’' : 'рџЏЃ Yakunlash'}
       </button>
     </div>
   `;
@@ -977,7 +1015,7 @@ function renderList() {
   const filtered = state.searchTerm
     ? questions.filter(q => (q.savol + q.savol_rus).toLowerCase().includes(state.searchTerm.toLowerCase()))
     : questions;
-  const otherTab = state.currentTab === 'main' ? 'Istisnolarga →' : '← Asosiyga';
+  const otherTab = state.currentTab === 'main' ? 'Istisnolarga в†’' : 'в†ђ Asosiyga';
 
   const container = document.getElementById('content');
   container.innerHTML = `
@@ -988,12 +1026,12 @@ function renderList() {
     </div>
 
     <div class="mode-bar">
-      <button class="mode-btn ${state.mode==='test'?'active':''}" onclick="state.mode='test'; render()">🧪 Test</button>
-      <button class="mode-btn ${state.mode==='list'?'active':''}" onclick="state.mode='list'; render()">📃 Ro'yxat</button>
+      <button class="mode-btn ${state.mode==='test'?'active':''}" onclick="state.mode='test'; render()">рџ§Є Test</button>
+      <button class="mode-btn ${state.mode==='list'?'active':''}" onclick="state.mode='list'; render()">рџ“ѓ Ro'yxat</button>
       <div class="spacer"></div>
-      <input class="search-input" type="text" placeholder="🔍 Qidirish..." value="${state.searchTerm}"
+      <input class="search-input" type="text" placeholder="рџ”Ќ Qidirish..." value="${state.searchTerm}"
              oninput="state.searchTerm=this.value; renderList()">
-      <button class="mode-btn" onclick="document.getElementById('file-input3').click()">📁 Fayl</button>
+      <button class="mode-btn" onclick="document.getElementById('file-input3').click()">рџ“Ѓ Fayl</button>
       <input type="file" id="file-input3" accept=".json" style="display:none" onchange="handleFile(this.files[0])">
     </div>
 
@@ -1008,7 +1046,7 @@ function renderList() {
       `).join('')}
     </div>` : `
     <div class="empty-state">
-      <div class="icon">🔍</div>
+      <div class="icon">рџ”Ќ</div>
       <h3>Hech narsa topilmadi</h3>
       <p>Qidiruv so'zini o'zgartiring</p>
     </div>`}
@@ -1020,24 +1058,35 @@ function escapeHtml(str) {
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-// ====== INIT ======
-updateCounts();
-render();
 
-// Auto-load if pdd_savollar_barchasi.json exists near this file (via URL params)
-const params = new URLSearchParams(location.search);
-if (params.get('file')) {
-  fetch(params.get('file'))
+// ====== INIT ======
+const _saved = loadState();
+// Agar saqlanган holat bo'sh bo'lsa — JSON dan yangi yukla
+if (!_saved || (!state.mainQuestions.length && !state.excQuestions.length)) {
+  fetch('pdd_savollar_barchasi.json')
     .then(r => r.json())
     .then(data => {
       data = data.map((q, i) => normalizeQuestion(q, i));
       state.mainQuestions = data;
+      state.excQuestions = [];
+      state.currentIndex = 0;
+      state.answered = {};
+      state.score = { correct: 0, wrong: 0 };
       updateCounts();
+      saveState();
       render();
-      showToast(`${data.length} ta savol avtomatik yuklandi!`, 'success');
+      showToast(data.length + ' ta savol yuklandi!', 'success');
     })
-    .catch(() => {});
+    .catch(err => {
+      console.error('JSON yuklab bo\'lmadi:', err);
+      render();
+    });
+} else {
+  updateCounts();
+  render();
+  showToast('Oldingi sessiya tiklandi (' + state.mainQuestions.length + ' ta savol)!', 'success');
 }
 </script>
 </body>
 </html>
+
