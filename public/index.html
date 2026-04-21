@@ -1071,24 +1071,7 @@ if (savedVersion !== APP_VERSION) {
 
 const _saved = loadState();
 if (!_saved || (!state.mainQuestions.length && !state.excQuestions.length)) {
-  fetch('pdd_savollar_barchasi.json')
-    .then(r => r.json())
-    .then(data => {
-      data = data.map((q, i) => normalizeQuestion(q, i));
-      state.mainQuestions = data;
-      state.excQuestions = [];
-      state.currentIndex = 0;
-      state.answered = {};
-      state.score = { correct: 0, wrong: 0 };
-      updateCounts();
-      saveState();
-      render();
-      showToast(data.length + ' ta savol yuklandi!', 'success');
-    })
-    .catch(err => {
-      console.error('JSON yuklashda xato:', err);
-      render();
-    });
+  render(); // Render empty state
 } else {
   updateCounts();
   render();
