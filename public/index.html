@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDD Test Manager — Yo'l Harakati Qoidalari</title>
+  <meta name="description" content="O'zbekiston PDD savollar bazasini boshqarish va test qilish ilovasi">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    :root {
+      --bg: #0a0e1a;
+      --bg2: #111827;
+      --bg3: #1a2236;
+      --surface: rgba(30,41,70,0.7);
+      --surface2: rgba(30,41,70,0.5);
+      --border: rgba(99,130,255,0.15);
+      --border-hover: rgba(99,130,255,0.35);
+      --primary: #6366f1;
+      --primary-glow: rgba(99,102,241,0.4);
+      --accent: #818cf8;
+      --green: #22c55e;
+      --green-bg: rgba(34,197,94,0.15);
+      --green-border: rgba(34,197,94,0.4);
+      --red: #ef4444;
+      --red-bg: rgba(239,68,68,0.15);
+      --red-border: rgba(239,68,68,0.4);
+      --yellow: #eab308;
+      --text: #e2e8f0;
+      --text2: #94a3b8;
+      --text3: #64748b;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ========= BG Gradient ========= */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(ellipse at 20% 50%, rgba(99,102,241,0.08) 0%, transparent 50%),
+                  radial-gradient(ellipse at 80% 20%, rgba(139,92,246,0.06) 0%, transparent 50%),
+                  radial-gradient(ellipse at 50% 80%, rgba(59,130,246,0.05) 0%, transparent 50%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .app { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 20px 16px 100px; }
+
+    /* ========= HEADER ========= */
+    .header {
+      text-align: center;
+      padding: 32px 0 24px;
+    }
+    .header h1 {
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #818cf8, #6366f1, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+    .header p { color: var(--text2); font-size: 14px; margin-top: 6px; }
+
+    /* ========= TABS ========= */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--surface);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 5px;
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 12px 16px;
+      border: none;
+      background: transparent;
+      color: var(--text2);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 20px var(--primary-glow);
+    }
+    .tab-btn .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      margin-left: 6px;
+      font-weight: 700;
+    }
+    .tab-btn:not(.active) .badge {
+      background: rgba(99,130,255,0.15);
+      color: var(--accent);
+    }
+
+    /* ========= UPLOAD ========= */
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 48px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      background: var(--surface2);
+      backdrop-filter: blur(10px);
+    }
+    .upload-zone:hover, .upload-zone.drag-over {
+      border-color: var(--primary);
+      background: rgba(99,102,241,0.08);
+      transform: scale(1.01);
+    }
+    .upload-zone .icon { font-size: 48px; margin-bottom: 12px; }
+    .upload-zone h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+    .upload-zone p { color: var(--text2); font-size: 13px; }
+    .upload-zone input { display: none; }
+
+    /* ========= STATS BAR ========= */
+    .stats-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .stat-card {
+      flex: 1;
+      min-width: 120px;
+      background: var(--surface);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      text-align: center;
+    }
+    .stat-card .num { font-size: 24px; font-weight: 800; color: var(--accent); }
+    .stat-card .label { font-size: 11px; color: var(--text2); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* ========= MODE TOGGLE (Test / List) ========= */
+    .mode-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      align-items: center;
+    }
+    .mode-btn {
+      padding: 8px 18px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text2);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .mode-btn:hover { border-color: var(--border-hover); color: var(--text); }
+    .mode-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    .mode-bar .spacer { flex: 1; }
+
+    .search-input {
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 13px;
+      border-radius: 8px;
+      outline: none;
+      width: 200px;
+      transition: var(--transition);
+    }
+    .search-input:focus { border-color: var(--primary); }
+    .search-input::placeholder { color: var(--text3); }
+
+    /* ========= QUESTION CARD (Test Mode) ========= */
+    .question-card {
+      background: var(--surface);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      animation: slideUp 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .question-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+
+    .q-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .q-number {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+      background: rgba(99,102,241,0.12);
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+    .q-bilet { font-size: 12px; color: var(--text3); }
+    .q-move-btn {
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--yellow);
+      border-color: rgba(234,179,8,0.3);
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .q-move-btn:hover {
+      background: rgba(234,179,8,0.15);
+      border-color: var(--yellow);
+    }
+
+    .q-text {
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      color: #f1f5f9;
+    }
+
+    .q-image {
+      width: 100%;
+      max-height: 300px;
+      object-fit: contain;
+      border-radius: var(--radius-sm);
+      margin-bottom: 20px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+    }
+
+    /* ========= ANSWERS ========= */
+    .answers { display: flex; flex-direction: column; gap: 10px; }
+
+    .answer-btn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      border: 1.5px solid var(--border);
+      background: rgba(30,41,70,0.4);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 15px;
+      line-height: 1.4;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      text-align: left;
+      width: 100%;
+    }
+    .answer-btn:hover:not(.disabled) {
+      border-color: var(--accent);
+      background: rgba(99,102,241,0.08);
+      transform: translateX(4px);
+    }
+    .answer-btn .letter {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: rgba(99,130,255,0.1);
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--accent);
+      flex-shrink: 0;
+      transition: all 0.3s ease;
+    }
+
+    .answer-btn.correct {
+      border-color: var(--green-border) !important;
+      background: var(--green-bg) !important;
+      animation: correctPulse 0.5s ease;
+    }
+    .answer-btn.correct .letter {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .answer-btn.wrong {
+      border-color: var(--red-border) !important;
+      background: var(--red-bg) !important;
+      animation: wrongShake 0.5s ease;
+    }
+    .answer-btn.wrong .letter {
+      background: var(--red);
+      color: #fff;
+    }
+    .answer-btn.disabled { pointer-events: none; opacity: 0.6; }
+    .answer-btn.correct.disabled { opacity: 1; }
+
+    /* ========= NAVIGATION ========= */
+    .nav-bar {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      justify-content: space-between;
+    }
+    .nav-btn {
+      padding: 12px 28px;
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .nav-btn:hover { background: #5558e6; transform: translateY(-1px); box-shadow: 0 6px 20px var(--primary-glow); }
+    .nav-btn:disabled { opacity: 0.4; pointer-events: none; }
+    .nav-btn.secondary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text2);
+    }
+    .nav-btn.secondary:hover { color: var(--text); border-color: var(--border-hover); background: var(--bg3); }
+
+    /* ========= PROGRESS ========= */
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: rgba(99,130,255,0.1);
+      border-radius: 4px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    /* ========= LIST MODE ========= */
+    .list-view { display: flex; flex-direction: column; gap: 8px; }
+
+    .list-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      animation: fadeIn 0.3s ease both;
+    }
+    .list-item:hover {
+      border-color: var(--border-hover);
+      transform: translateX(4px);
+    }
+    .list-item .li-id {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text3);
+      min-width: 50px;
+    }
+    .list-item .li-text {
+      flex: 1;
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.4;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .list-item .li-move {
+      padding: 6px 12px;
+      border: 1px solid rgba(234,179,8,0.25);
+      background: transparent;
+      color: var(--yellow);
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+    .list-item .li-move:hover {
+      background: rgba(234,179,8,0.12);
+      border-color: var(--yellow);
+    }
+
+    /* ========= DOWNLOAD BAR ========= */
+    .download-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0; right: 0;
+      background: rgba(10,14,26,0.9);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      z-index: 100;
+    }
+    .dl-btn {
+      padding: 10px 22px;
+      border: none;
+      background: var(--green);
+      color: #fff;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .dl-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(34,197,94,0.3); }
+    .dl-btn.exc { background: var(--yellow); color: #000; }
+    .dl-btn.exc:hover { box-shadow: 0 4px 16px rgba(234,179,8,0.3); }
+    .dl-btn:disabled { opacity: 0.3; pointer-events: none; }
+
+    /* ========= TOAST ========= */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 14px 24px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 200;
+      animation: toastIn 0.4s ease, toastOut 0.4s ease 2.5s forwards;
+      pointer-events: none;
+    }
+    .toast.success { background: var(--green); color: #fff; }
+    .toast.info { background: var(--primary); color: #fff; }
+    .toast.warn { background: var(--yellow); color: #000; }
+
+    /* ========= RESULT OVERLAY ========= */
+    .result-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 150;
+      animation: fadeIn 0.3s ease;
+    }
+    .result-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px;
+      text-align: center;
+      max-width: 420px;
+      width: 90%;
+      animation: scaleIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .result-card .emoji { font-size: 64px; margin-bottom: 16px; }
+    .result-card h2 { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+    .result-card p { color: var(--text2); margin-bottom: 24px; }
+    .result-card .score { font-size: 48px; font-weight: 800; color: var(--green); }
+    .result-card .score span { font-size: 20px; color: var(--text3); }
+
+    /* ========= EMPTY STATE ========= */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text3);
+    }
+    .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-state h3 { font-size: 18px; color: var(--text2); margin-bottom: 6px; }
+
+    /* ========= ANIMATIONS ========= */
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes correctPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
+    @keyframes wrongShake {
+      0%,100% { transform: translateX(0); }
+      20% { transform: translateX(-8px); }
+      40% { transform: translateX(8px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(40px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes toastOut {
+      from { opacity: 1; }
+      to { opacity: 0; transform: translateY(-10px); }
+    }
+
+    /* ========= SCROLLBAR ========= */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+    /* ========= PAGINATION ========= */
+    .pagination {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      justify-content: center;
+    }
+    .page-dot {
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text3);
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+    .page-dot:hover { border-color: var(--accent); color: var(--text); }
+    .page-dot.current { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .page-dot.answered { background: rgba(34,197,94,0.15); border-color: var(--green-border); color: var(--green); }
+    .page-dot.wrong-dot { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
+
+    @media (max-width: 600px) {
+      .app { padding: 12px 10px 90px; }
+      .header h1 { font-size: 22px; }
+      .question-card { padding: 20px; }
+      .q-text { font-size: 15px; }
+      .stats-bar { gap: 6px; }
+      .stat-card { padding: 10px 12px; }
+      .stat-card .num { font-size: 20px; }
+      .search-input { width: 140px; }
+      .download-bar { flex-wrap: wrap; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <!-- Header -->
+  <div class="header">
+    <h1>🚗 PDD Test Manager</h1>
+    <p>Yo'l harakati qoidalari — savollar bazasini boshqarish</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('main')" id="tab-main">
+      📋 Asosiy <span class="badge" id="count-main">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('exc')" id="tab-exc">
+      ⚠️ Istisnolar <span class="badge" id="count-exc">0</span>
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div id="content"></div>
+</div>
+
+<!-- Download Bar -->
+<div class="download-bar" id="download-bar" style="display:none">
+  <button class="dl-btn" onclick="downloadJSON('main')" id="dl-main">⬇ Asosiy bazani yuklab olish</button>
+  <button class="dl-btn exc" onclick="downloadJSON('exc')" id="dl-exc">⬇ Istisnolarni yuklab olish</button>
+</div>
+
+<script>
+// ====== STATE ======
+const state = {
+  mainQuestions: [],
+  excQuestions: [],
+  currentTab: 'main',
+  mode: 'test',      // 'test' or 'list'
+  currentIndex: 0,
+  answered: {},       // { questionId: { selected, correct } }
+  searchTerm: '',
+  score: { correct: 0, wrong: 0 }
+};
+
+// ====== HELPERS ======
+function getCurrentQuestions() {
+  return state.currentTab === 'main' ? state.mainQuestions : state.excQuestions;
+}
+
+function setCurrentQuestions(arr) {
+  if (state.currentTab === 'main') state.mainQuestions = arr;
+  else state.excQuestions = arr;
+}
+
+function getOtherTab() { return state.currentTab === 'main' ? 'exc' : 'main'; }
+
+function updateCounts() {
+  document.getElementById('count-main').textContent = state.mainQuestions.length;
+  document.getElementById('count-exc').textContent = state.excQuestions.length;
+  const dlBar = document.getElementById('download-bar');
+  dlBar.style.display = (state.mainQuestions.length || state.excQuestions.length) ? 'flex' : 'none';
+  document.getElementById('dl-main').disabled = !state.mainQuestions.length;
+  document.getElementById('dl-exc').disabled = !state.excQuestions.length;
+}
+
+function showToast(msg, type='info') {
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// ====== TAB SWITCHING ======
+function switchTab(tab) {
+  state.currentTab = tab;
+  state.currentIndex = 0;
+  state.answered = {};
+  state.score = { correct: 0, wrong: 0 };
+  state.searchTerm = '';
+  document.getElementById('tab-main').classList.toggle('active', tab==='main');
+  document.getElementById('tab-exc').classList.toggle('active', tab==='exc');
+  render();
+}
+
+// ====== FILE LOADING ======
+function handleFile(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      let data = JSON.parse(e.target.result);
+      if (!Array.isArray(data)) {
+        showToast('JSON massiv formatida bo\'lishi kerak!', 'warn');
+        return;
+      }
+      // Normalize: support both ptest format and raw format
+      data = data.map((q, i) => normalizeQuestion(q, i));
+      if (state.currentTab === 'main') state.mainQuestions = data;
+      else state.excQuestions = data;
+      state.currentIndex = 0;
+      state.answered = {};
+      state.score = { correct: 0, wrong: 0 };
+      updateCounts();
+      showToast(`${data.length} ta savol yuklandi!`, 'success');
+      render();
+    } catch(err) {
+      showToast('JSON o\'qishda xatolik: ' + err.message, 'warn');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function normalizeQuestion(q, idx) {
+  // Already normalized format (our extracted format)
+  if (q.savol && q.javob_1) {
+    return {
+      id: q.id || idx + 1,
+      bilet_id: q.bilet_id || 1,
+      savol: q.savol || q.savol_uz || '',
+      savol_kril: q.savol_kril || '',
+      savol_rus: q.savol_rus || '',
+      rasm: q.rasm || '',
+      answers: [q.javob_1, q.javob_2, q.javob_3, q.javob_4].filter(Boolean).map((a, i) => ({
+        text: a,
+        correct: (i + 1) === q.togri_javob_raqami
+      })),
+      togri_javob: q.togri_javob || ''
+    };
+  }
+  // Raw ptest format with question object
+  if (q.question && q.answers) {
+    return {
+      id: q.id || idx + 1,
+      bilet_id: q.bilet_id || 1,
+      savol: q.question.lot || q.question.kril || '',
+      savol_kril: q.question.kril || '',
+      savol_rus: q.question.rus || '',
+      rasm: q.photo ? (q.photo.startsWith('http') ? q.photo : `https://ptest.uz/images/${q.photo}`) : '',
+      answers: q.answers.map(a => ({
+        text: a.label ? (a.label.lot || a.label.kril || '') : (typeof a === 'string' ? a : ''),
+        correct: !!a.is_answer
+      })),
+      togri_javob: ''
+    };
+  }
+  // Fallback
+  return {
+    id: idx + 1, bilet_id: 1,
+    savol: JSON.stringify(q).substring(0, 100),
+    savol_kril: '', savol_rus: '', rasm: '',
+    answers: [{ text: 'N/A', correct: true }],
+    togri_javob: ''
+  };
+}
+
+// ====== MOVE QUESTION ======
+function moveQuestion(qId) {
+  const src = getCurrentQuestions();
+  const dst = state.currentTab === 'main' ? state.excQuestions : state.mainQuestions;
+  const idx = src.findIndex(q => q.id === qId);
+  if (idx === -1) return;
+  const [q] = src.splice(idx, 1);
+  dst.push(q);
+  if (state.currentIndex >= src.length && src.length > 0) state.currentIndex = src.length - 1;
+  if (src.length === 0) state.currentIndex = 0;
+  updateCounts();
+  const target = state.currentTab === 'main' ? 'Istisnolar' : 'Asosiy';
+  showToast(`Savol #${q.id} → ${target}ga ko'chirildi`, 'success');
+  render();
+}
+
+// ====== DOWNLOAD ======
+function downloadJSON(which) {
+  const data = which === 'main' ? state.mainQuestions : state.excQuestions;
+  if (!data.length) return;
+
+  // Convert back to savol/javob format
+  const exportData = data.map(q => ({
+    id: q.id,
+    bilet_id: q.bilet_id,
+    savol: q.savol,
+    savol_kril: q.savol_kril,
+    savol_rus: q.savol_rus,
+    rasm: q.rasm,
+    javob_1: q.answers[0] ? q.answers[0].text : '',
+    javob_2: q.answers[1] ? q.answers[1].text : '',
+    javob_3: q.answers[2] ? q.answers[2].text : '',
+    javob_4: q.answers[3] ? q.answers[3].text : '',
+    togri_javob_raqami: q.answers.findIndex(a => a.correct) + 1,
+    togri_javob: q.answers.find(a => a.correct)?.text || ''
+  }));
+
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = which === 'main' ? 'pdd_asosiy.json' : 'pdd_istisnolar.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast(`${exportData.length} ta savol ${a.download} sifatida yuklandi!`, 'success');
+}
+
+// ====== ANSWER HANDLING ======
+function selectAnswer(qId, ansIdx) {
+  if (state.answered[qId]) return;
+  const questions = getCurrentQuestions();
+  const q = questions.find(x => x.id === qId);
+  if (!q) return;
+  const isCorrect = q.answers[ansIdx].correct;
+  state.answered[qId] = { selected: ansIdx, correct: isCorrect };
+  if (isCorrect) state.score.correct++;
+  else state.score.wrong++;
+  renderQuestion();
+}
+
+function nextQuestion() {
+  const questions = getCurrentQuestions();
+  if (state.currentIndex < questions.length - 1) {
+    state.currentIndex++;
+    renderQuestion();
+  } else {
+    showResults();
+  }
+}
+
+function prevQuestion() {
+  if (state.currentIndex > 0) {
+    state.currentIndex--;
+    renderQuestion();
+  }
+}
+
+function goToQuestion(idx) {
+  state.currentIndex = idx;
+  renderQuestion();
+}
+
+// ====== RESULTS ======
+function showResults() {
+  const total = Object.keys(state.answered).length;
+  if (!total) return;
+  const pct = Math.round((state.score.correct / total) * 100);
+  const emoji = pct >= 80 ? '🎉' : pct >= 50 ? '😊' : '😔';
+  const msg = pct >= 80 ? 'Ajoyib natija!' : pct >= 50 ? 'Yomon emas!' : 'Ko\'proq mashq qiling!';
+
+  const overlay = document.createElement('div');
+  overlay.className = 'result-overlay';
+  overlay.innerHTML = `
+    <div class="result-card">
+      <div class="emoji">${emoji}</div>
+      <h2>Test yakunlandi!</h2>
+      <p>${msg}</p>
+      <div class="score">${pct}%<span> (${state.score.correct}/${total})</span></div>
+      <div style="margin-top:8px; font-size:14px; color:var(--text2)">
+        ✅ To'g'ri: ${state.score.correct} &nbsp; ❌ Xato: ${state.score.wrong}
+      </div>
+      <button class="nav-btn" style="margin-top:24px; width:100%" onclick="this.closest('.result-overlay').remove()">Yopish</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
+// ====== RENDERING ======
+function render() {
+  const questions = getCurrentQuestions();
+  const container = document.getElementById('content');
+
+  if (!questions.length) {
+    container.innerHTML = renderUploadZone();
+    updateCounts();
+    return;
+  }
+
+  if (state.mode === 'list') renderList();
+  else renderQuestion();
+}
+
+function renderUploadZone() {
+  return `
+    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()"
+         ondragover="event.preventDefault(); this.classList.add('drag-over')"
+         ondragleave="this.classList.remove('drag-over')"
+         ondrop="event.preventDefault(); this.classList.remove('drag-over'); handleFile(event.dataTransfer.files[0])">
+      <div class="icon">📁</div>
+      <h3>JSON faylni yuklang</h3>
+      <p>Fayl tanlash uchun bosing yoki shu yerga tashlang</p>
+      <input type="file" id="file-input" accept=".json" onchange="handleFile(this.files[0])">
+    </div>
+  `;
+}
+
+function renderQuestion() {
+  const questions = getCurrentQuestions();
+  if (!questions.length) return render();
+  const q = questions[state.currentIndex];
+  const ans = state.answered[q.id];
+  const correctIdx = q.answers.findIndex(a => a.correct);
+  const otherTab = state.currentTab === 'main' ? 'Istisnolarga' : 'Asosiyga';
+  const letters = ['A','B','C','D','E'];
+
+  const container = document.getElementById('content');
+  container.innerHTML = `
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="stat-card"><div class="num">${questions.length}</div><div class="label">Jami savollar</div></div>
+      <div class="stat-card"><div class="num" style="color:var(--green)">${state.score.correct}</div><div class="label">To'g'ri</div></div>
+      <div class="stat-card"><div class="num" style="color:var(--red)">${state.score.wrong}</div><div class="label">Xato</div></div>
+      <div class="stat-card"><div class="num">${Object.keys(state.answered).length}</div><div class="label">Javob berilgan</div></div>
+    </div>
+
+    <!-- Mode Bar -->
+    <div class="mode-bar">
+      <button class="mode-btn ${state.mode==='test'?'active':''}" onclick="state.mode='test'; render()">🧪 Test</button>
+      <button class="mode-btn ${state.mode==='list'?'active':''}" onclick="state.mode='list'; render()">📃 Ro'yxat</button>
+      <div class="spacer"></div>
+      <button class="mode-btn" onclick="document.getElementById('file-input2').click()">📁 Fayl yuklash</button>
+      <input type="file" id="file-input2" accept=".json" style="display:none" onchange="handleFile(this.files[0])">
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-bar">
+      <div class="progress-fill" style="width:${((state.currentIndex+1)/questions.length*100)}%"></div>
+    </div>
+
+    <!-- Pagination dots -->
+    <div class="pagination">
+      ${questions.slice(Math.max(0, state.currentIndex-10), Math.min(questions.length, state.currentIndex+11)).map((pq, i) => {
+        const realIdx = Math.max(0, state.currentIndex-10) + i;
+        const a = state.answered[pq.id];
+        let cls = realIdx === state.currentIndex ? 'current' : '';
+        if (a && a.correct) cls += ' answered';
+        if (a && !a.correct) cls += ' wrong-dot';
+        return `<button class="page-dot ${cls}" onclick="goToQuestion(${realIdx})">${realIdx+1}</button>`;
+      }).join('')}
+    </div>
+
+    <!-- Question Card -->
+    <div class="question-card" key="${q.id}">
+      <div class="q-header">
+        <span class="q-number">Savol ${state.currentIndex+1} / ${questions.length}</span>
+        <span class="q-bilet">Bilet #${q.bilet_id} • ID: ${q.id}</span>
+        <button class="q-move-btn" onclick="moveQuestion(${q.id})">↗ ${otherTab} ko'chirish</button>
+      </div>
+
+      <div class="q-text">${escapeHtml(q.savol)}</div>
+
+      ${q.rasm ? `<img class="q-image" src="${q.rasm}" alt="Rasm" onerror="this.style.display='none'" loading="lazy">` : ''}
+
+      <div class="answers">
+        ${q.answers.map((a, i) => {
+          let cls = '';
+          if (ans) {
+            if (i === correctIdx) cls = 'correct';
+            else if (i === ans.selected && !ans.correct) cls = 'wrong';
+            else cls = 'disabled';
+          }
+          return `<button class="answer-btn ${cls}" onclick="selectAnswer(${q.id}, ${i})">
+            <span class="letter">${letters[i]}</span>
+            <span>${escapeHtml(a.text)}</span>
+          </button>`;
+        }).join('')}
+      </div>
+
+      ${ans ? `
+      <div style="margin-top:16px; padding:12px 16px; border-radius:10px; font-size:14px; font-weight:600;
+        background: ${ans.correct ? 'var(--green-bg)' : 'var(--red-bg)'};
+        border: 1px solid ${ans.correct ? 'var(--green-border)' : 'var(--red-border)'};
+        color: ${ans.correct ? 'var(--green)' : 'var(--red)'}">
+        ${ans.correct ? '✅ To\'g\'ri javob!' : `❌ Xato! To'g'ri javob: ${letters[correctIdx]}. ${escapeHtml(q.answers[correctIdx].text)}`}
+      </div>` : ''}
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-bar">
+      <button class="nav-btn secondary" onclick="prevQuestion()" ${state.currentIndex===0?'disabled':''}>← Oldingi</button>
+      <button class="nav-btn" onclick="nextQuestion()">
+        ${state.currentIndex < questions.length-1 ? 'Keyingi →' : '🏁 Yakunlash'}
+      </button>
+    </div>
+  `;
+}
+
+function renderList() {
+  const questions = getCurrentQuestions();
+  const filtered = state.searchTerm
+    ? questions.filter(q => (q.savol + q.savol_rus).toLowerCase().includes(state.searchTerm.toLowerCase()))
+    : questions;
+  const otherTab = state.currentTab === 'main' ? 'Istisnolarga →' : '← Asosiyga';
+
+  const container = document.getElementById('content');
+  container.innerHTML = `
+    <div class="stats-bar">
+      <div class="stat-card"><div class="num">${questions.length}</div><div class="label">Jami</div></div>
+      <div class="stat-card"><div class="num" style="color:var(--green)">${state.score.correct}</div><div class="label">To'g'ri</div></div>
+      <div class="stat-card"><div class="num" style="color:var(--red)">${state.score.wrong}</div><div class="label">Xato</div></div>
+    </div>
+
+    <div class="mode-bar">
+      <button class="mode-btn ${state.mode==='test'?'active':''}" onclick="state.mode='test'; render()">🧪 Test</button>
+      <button class="mode-btn ${state.mode==='list'?'active':''}" onclick="state.mode='list'; render()">📃 Ro'yxat</button>
+      <div class="spacer"></div>
+      <input class="search-input" type="text" placeholder="🔍 Qidirish..." value="${state.searchTerm}"
+             oninput="state.searchTerm=this.value; renderList()">
+      <button class="mode-btn" onclick="document.getElementById('file-input3').click()">📁 Fayl</button>
+      <input type="file" id="file-input3" accept=".json" style="display:none" onchange="handleFile(this.files[0])">
+    </div>
+
+    ${filtered.length ? `
+    <div class="list-view">
+      ${filtered.map((q, i) => `
+        <div class="list-item" style="animation-delay:${Math.min(i*0.03, 0.5)}s" onclick="state.mode='test'; state.currentIndex=${questions.indexOf(q)}; render()">
+          <span class="li-id">#${q.id}</span>
+          <span class="li-text">${escapeHtml(q.savol)}</span>
+          <button class="li-move" onclick="event.stopPropagation(); moveQuestion(${q.id})">${otherTab}</button>
+        </div>
+      `).join('')}
+    </div>` : `
+    <div class="empty-state">
+      <div class="icon">🔍</div>
+      <h3>Hech narsa topilmadi</h3>
+      <p>Qidiruv so'zini o'zgartiring</p>
+    </div>`}
+  `;
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ====== INIT ======
+updateCounts();
+render();
+
+// Auto-load if pdd_savollar_barchasi.json exists near this file (via URL params)
+const params = new URLSearchParams(location.search);
+if (params.get('file')) {
+  fetch(params.get('file'))
+    .then(r => r.json())
+    .then(data => {
+      data = data.map((q, i) => normalizeQuestion(q, i));
+      state.mainQuestions = data;
+      updateCounts();
+      render();
+      showToast(`${data.length} ta savol avtomatik yuklandi!`, 'success');
+    })
+    .catch(() => {});
+}
+</script>
+</body>
+</html>

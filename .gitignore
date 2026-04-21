@@ -1,0 +1,13 @@
+node_modules/
+.env
+*.log
+extract_pdd.js
+extract_all_pdd.js
+extract_questions.ps1
+raw_questions.json
+raw_extracted.json
+debug_raw.txt
+debug.js
+pdd_savollar.json
+pdd_savollar.csv
+photo_*.jpg
