@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="uz">
 <head>
   <meta charset="UTF-8">
@@ -1060,8 +1060,16 @@ function escapeHtml(str) {
 
 
 // ====== INIT ======
+const APP_VERSION = 'v2_webp'; // Versiya o'zgarganda cache tozalanadi
+const savedVersion = localStorage.getItem('pdd_version');
+
+if (savedVersion !== APP_VERSION) {
+  // Yangi versiya — eski cacheni tozala
+  localStorage.removeItem('pdd_state');
+  localStorage.setItem('pdd_version', APP_VERSION);
+}
+
 const _saved = loadState();
-// Agar saqlanган holat bo'sh bo'lsa — JSON dan yangi yukla
 if (!_saved || (!state.mainQuestions.length && !state.excQuestions.length)) {
   fetch('pdd_savollar_barchasi.json')
     .then(r => r.json())
@@ -1078,13 +1086,12 @@ if (!_saved || (!state.mainQuestions.length && !state.excQuestions.length)) {
       showToast(data.length + ' ta savol yuklandi!', 'success');
     })
     .catch(err => {
-      console.error('JSON yuklab bo\'lmadi:', err);
+      console.error('JSON yuklashda xato:', err);
       render();
     });
 } else {
   updateCounts();
   render();
-  showToast('Oldingi sessiya tiklandi (' + state.mainQuestions.length + ' ta savol)!', 'success');
 }
 </script>
 </body>
