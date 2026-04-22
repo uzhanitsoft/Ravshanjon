@@ -728,15 +728,27 @@
   </div>
 
   <!-- Permanent Upload Button -->
-  <div id="upload-box" style="text-align: center; margin: 40px auto; max-width: 600px; padding: 20px; display: flex; gap: 10px;">
-    <input type="file" id="perm-main" accept=".json" style="display:none" onchange="handleFile(this.files[0], 'main')">
-    <button class="upload-btn" onclick="document.getElementById('perm-main').click()" style="flex: 1; padding: 20px; font-size: 18px; border-radius: 16px;">
-      &#x1F4C1; Asosiyga Yuklash
-    </button>
-    <input type="file" id="perm-exc" accept=".json" style="display:none" onchange="handleFile(this.files[0], 'exc')">
-    <button class="upload-btn" style="flex: 1; padding: 20px; font-size: 18px; border-radius: 16px; background: rgba(234,179,8,0.1); border-color: var(--yellow); color: var(--yellow);" onclick="document.getElementById('perm-exc').click()">
-      &#x26A0;&#xFE0F; Istisnoga Yuklash
-    </button>
+  <div id="upload-box" style="margin: 30px auto; max-width: 600px; padding: 15px; display: flex; flex-direction: column; gap: 10px;">
+    <!-- Asosiy: Yuklash + O'chirish -->
+    <div style="display:flex; gap:8px; align-items:stretch;">
+      <input type="file" id="perm-main" accept=".json" style="display:none" onchange="handleFile(this.files[0], 'main')">
+      <button class="upload-btn" onclick="document.getElementById('perm-main').click()" style="flex: 1; padding: 16px; font-size: 16px; border-radius: 14px;">
+        &#x1F4C1; Asosiyga Yuklash
+      </button>
+      <button class="upload-btn" onclick="clearSpecificState('main')" id="btn-del-main" style="padding: 16px 18px; font-size: 18px; border-radius: 14px; background: rgba(239,68,68,0.1); border-color: var(--red); color: var(--red); display:none;" title="Asosiy bazani o'chirish">
+        &#x1F5D1;
+      </button>
+    </div>
+    <!-- Istisno: Yuklash + O'chirish -->
+    <div style="display:flex; gap:8px; align-items:stretch;">
+      <input type="file" id="perm-exc" accept=".json" style="display:none" onchange="handleFile(this.files[0], 'exc')">
+      <button class="upload-btn" style="flex: 1; padding: 16px; font-size: 16px; border-radius: 14px; background: rgba(234,179,8,0.1); border-color: var(--yellow); color: var(--yellow);" onclick="document.getElementById('perm-exc').click()">
+        &#x26A0;&#xFE0F; Istisnoga Yuklash
+      </button>
+      <button class="upload-btn" onclick="clearSpecificState('exc')" id="btn-del-exc" style="padding: 16px 18px; font-size: 18px; border-radius: 14px; background: rgba(239,68,68,0.1); border-color: var(--red); color: var(--red); display:none;" title="Istisnolar bazasini o'chirish">
+        &#x1F5D1;
+      </button>
+    </div>
   </div>
 
   <!-- Content -->
@@ -811,6 +823,12 @@ function updateCounts() {
   const dlGrpExc = document.getElementById('dl-grp-exc');
   if(dlGrpMain) dlGrpMain.style.display = state.mainQuestions.length ? 'flex' : 'none';
   if(dlGrpExc) dlGrpExc.style.display = state.excQuestions.length ? 'flex' : 'none';
+  
+  // Bosh sahifadagi o'chirish tugmalari
+  const btnDelMain = document.getElementById('btn-del-main');
+  const btnDelExc = document.getElementById('btn-del-exc');
+  if(btnDelMain) btnDelMain.style.display = state.mainQuestions.length ? 'inline-flex' : 'none';
+  if(btnDelExc) btnDelExc.style.display = state.excQuestions.length ? 'inline-flex' : 'none';
 }
 
 function showToast(msg, type='info') {
