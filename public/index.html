@@ -289,22 +289,23 @@
 
     .answer-btn {
       display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 16px 20px;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
       border: 2px solid var(--border);
       background: rgba(30,41,70,0.6);
       color: var(--text);
       font-family: inherit;
-      font-size: 16px;
-      line-height: 1.5;
-      border-radius: 14px;
+      font-size: 15px;
+      line-height: 1.4;
+      border-radius: 12px;
       cursor: pointer;
-      transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
       text-align: left;
       width: 100%;
       position: relative;
       overflow: hidden;
+      min-height: 52px;
     }
     .answer-btn:hover:not(.disabled) {
       border-color: var(--accent);
@@ -312,12 +313,12 @@
       transform: translateX(4px);
     }
     .answer-btn .letter {
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 8px;
+      border-radius: 6px;
       background: rgba(99,130,255,0.1);
       font-weight: 700;
       font-size: 14px;
@@ -702,8 +703,8 @@
       .upload-zone h3 { font-size: 20px; }
       .nav-bar { flex-direction: column; gap: 12px; }
       .nav-btn { min-height: 54px; font-size: 16px; width: 100%; justify-content: center; display: flex; align-items: center; }
-      .answer-btn { padding: 16px; font-size: 15px; min-height: 60px; border-radius: 12px; }
-      .answer-btn .letter { width: 36px; height: 36px; font-size: 15px; }
+      .answer-btn { padding: 12px; font-size: 14px; min-height: 48px; border-radius: 10px; gap: 10px; border-width: 1.5px; }
+      .answer-btn .letter { width: 26px; height: 26px; font-size: 13px; border-radius: 6px; flex-shrink: 0; }
       .q-move-btn { font-size: 11px; padding: 4px 8px; }
     }
   </style>
@@ -980,6 +981,12 @@ function downloadJSON(which) {
 }
 
 // ====== ANSWER HANDLING ======
+function setAndPreserveScroll(action) {
+  const scrollPos = window.scrollY;
+  action();
+  window.scrollTo({ top: scrollPos, behavior: 'instant' });
+}
+
 function selectAnswer(qId, ansIdx) {
   if (state.answered[qId]) return;
   const questions = getCurrentQuestions();
@@ -992,10 +999,7 @@ function selectAnswer(qId, ansIdx) {
   if (isCorrect) state.score.correct++;
   else state.score.wrong++;
   
-  // To avoid auto-scroll jump, explicitly preserve scroll depth
-  const scrollPos = window.scrollY;
-  renderQuestion();
-  setTimeout(() => window.scrollTo(0, scrollPos), 0);
+  setAndPreserveScroll(() => renderQuestion(false)); // Do not re-animate on click
 }
 
 function nextQuestion() {
@@ -1003,7 +1007,7 @@ function nextQuestion() {
   const questions = getCurrentQuestions();
   if (state.currentIndex < questions.length - 1) {
     state.currentIndex++;
-    renderQuestion(true); // use animation
+    setAndPreserveScroll(() => renderQuestion(true));
   } else {
     showResults();
   }
@@ -1013,14 +1017,14 @@ function prevQuestion() {
   state.selectedAns = null;
   if (state.currentIndex > 0) {
     state.currentIndex--;
-    renderQuestion(true);
+    setAndPreserveScroll(() => renderQuestion(true));
   }
 }
 
 function goToQuestion(idx) {
   state.selectedAns = null;
   state.currentIndex = idx;
-  renderQuestion(true);
+  setAndPreserveScroll(() => renderQuestion(true));
 }
 
 // ====== RESULTS ======
