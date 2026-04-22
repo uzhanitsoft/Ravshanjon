@@ -35,10 +35,15 @@ extractImagesIfNeeded();
 
 // Serve static files from public/
 app.use(express.static(path.join(__dirname, 'public'), {
-  maxAge: '1h',
   setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.html')) {
+      // HTML hech qachon keshlanmasin
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    }
     if (filePath.endsWith('.json')) {
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.setHeader('Cache-Control', 'no-store');
     }
     if (filePath.match(/\.(png|webp|jpg|jpeg)$/)) {
       res.setHeader('Cache-Control', 'public, max-age=86400');
