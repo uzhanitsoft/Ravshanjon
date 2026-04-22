@@ -998,7 +998,30 @@ function selectAnswer(qId, ansIdx) {
   if (isCorrect) state.score.correct++;
   else state.score.wrong++;
   
-  setAndPreserveScroll(() => renderQuestion(false)); // Do not re-animate on click
+  const correctIdx = q.answers.findIndex(a => a.correct);
+  const buttons = document.querySelectorAll('.answer-btn');
+  
+  buttons.forEach((btn, i) => {
+    btn.classList.add('disabled');
+    if (i === correctIdx) {
+      btn.classList.add('correct');
+    } else if (i === ansIdx && !isCorrect) {
+      btn.classList.add('wrong');
+    }
+  });
+
+  const nextBtn = document.getElementById('next-btn-nav');
+  if (nextBtn) {
+    nextBtn.style.background = '#34a853';
+    nextBtn.style.color = 'white';
+  }
+
+  // Avtomatik o'tish (1 sekund)
+  setTimeout(() => {
+    if (state.currentIndex === questions.indexOf(q)) {
+      nextQuestion();
+    }
+  }, 1000);
 }
 
 function nextQuestion() {
@@ -1227,7 +1250,7 @@ function renderQuestion(animate = false) {
 
       <!-- Action Bar (Move & Nav) directly below answers -->
       <div class="nav-bar" style="margin-top: 16px; align-items: stretch; justify-content: stretch; display: flex; gap: 10px;">
-        <button class="nav-btn" style="flex: 1; ${ans ? 'background: #34a853; color: white;' : ''}" onclick="nextQuestion()">
+        <button id="next-btn-nav" class="nav-btn" style="flex: 1; ${ans ? 'background: #34a853; color: white;' : ''}" onclick="nextQuestion()">
           ${state.currentIndex < questions.length-1 ? 'Keyingi &#x2192;' : '&#x1F3C1; Yakunlash'}
         </button>
         <button class="nav-btn secondary" style="flex: 1;" onclick="prevQuestion()" ${state.currentIndex===0?'disabled':''}>&#x2190; Oldingi</button>
