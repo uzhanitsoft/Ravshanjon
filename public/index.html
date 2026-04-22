@@ -645,10 +645,10 @@
   </div>
 
   <!-- Permanent Upload Button -->
-  <div style="text-align: center; margin: 20px 0;">
+  <div id="upload-box" style="text-align: center; margin: 40px auto; max-width: 500px; padding: 20px;">
     <input type="file" id="perm-file-input" accept=".json" style="display:none" onchange="handleFile(this.files[0])">
-    <button class="upload-btn" onclick="document.getElementById('perm-file-input').click()" style="width: 100%; max-width: 300px;">
-      &#x1F4C1; JSON Fayl yuklash
+    <button class="upload-btn" onclick="document.getElementById('perm-file-input').click()" style="width: 100%; padding: 25px; font-size: 24px; border-radius: 20px;">
+      &#x1F4C1; JSON Faylni Shu Yerdan Yuklang
     </button>
   </div>
 
@@ -933,17 +933,31 @@ function showResults() {
 
 // ====== RENDERING ======
 function render() {
-  const questions = getCurrentQuestions();
-  const container = document.getElementById('content');
+  try {
+    const questions = getCurrentQuestions();
+    const container = document.getElementById('content');
+    const uploadBox = document.getElementById('upload-box');
+    
+    if (uploadBox) {
+      if (questions.length > 0) {
+        uploadBox.style.display = 'none';
+      } else {
+        uploadBox.style.display = 'block';
+      }
+    }
 
-  if (!questions.length) {
-    container.innerHTML = renderUploadZone();
-    updateCounts();
-    return;
+    if (!questions.length) {
+      container.innerHTML = '';
+      updateCounts();
+      return;
+    }
+
+    if (state.mode === 'list') renderList();
+    else renderQuestion();
+  } catch (err) {
+    console.error("Render error:", err);
+    showToast("Ekranga chiqarishda xatolik yuz berdi: " + err.message, "warn");
   }
-
-  if (state.mode === 'list') renderList();
-  else renderQuestion();
 }
 
 function renderUploadZone() {
