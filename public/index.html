@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PDD Test Manager вЂ” Yo'l Harakati Qoidalari</title>
+  <title>PDD Test Manager &#8212; Yo&#39;l Harakati Qoidalari</title>
   <meta name="description" content="O'zbekiston PDD savollar bazasini boshqarish va test qilish ilovasi">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -882,7 +882,7 @@ function showResults() {
       <p>${msg}</p>
       <div class="score">${pct}%<span> (${state.score.correct}/${total})</span></div>
       <div style="margin-top:8px; font-size:14px; color:var(--text2)">
-        вњ… To'g'ri: ${state.score.correct} &nbsp; вќЊ Xato: ${state.score.wrong}
+        &#x2705; To'g'ri: ${state.score.correct} &nbsp; &#x274C; Xato: ${state.score.wrong}
       </div>
       <button class="nav-btn" style="margin-top:24px; width:100%" onclick="this.closest('.result-overlay').remove()">Yopish</button>
     </div>
@@ -911,7 +911,7 @@ function renderUploadZone() {
          ondragover="event.preventDefault(); this.classList.add('drag-over')"
          ondragleave="this.classList.remove('drag-over')"
          ondrop="event.preventDefault(); this.classList.remove('drag-over'); handleFile(event.dataTransfer.files[0])">
-      <div class="icon">&#x1F50D;</div>
+      <div class="icon">&#x1F4C2;</div>
       <h3>JSON faylni yuklang</h3>
       <p>Fayl tanlash uchun bosing yoki shu yerga tashlang</p>
       <input type="file" id="file-input" accept=".json" onchange="handleFile(this.files[0])">
@@ -969,7 +969,7 @@ function renderQuestion() {
       <div class="q-header">
         <span class="q-number">Savol ${state.currentIndex+1} / ${questions.length}</span>
         <span class="q-bilet">Bilet #${q.bilet_id} &#x2022; ID: ${q.id}</span>
-        <button class="q-move-btn" onclick="moveQuestion(${q.id})">&#x2197; ${otherTab} ko'chirish</button>
+        <button class="q-move-btn" onclick="moveQuestion(${q.id})">&#x2197; ${otherTab}ga ko'chirish</button>
       </div>
 
       <div class="q-text">${escapeHtml(q.savol)}</div>
@@ -996,7 +996,7 @@ function renderQuestion() {
         background: ${ans.correct ? 'var(--green-bg)' : 'var(--red-bg)'};
         border: 1px solid ${ans.correct ? 'var(--green-border)' : 'var(--red-border)'};
         color: ${ans.correct ? 'var(--green)' : 'var(--red)'}">
-        ${ans.correct ? 'вњ… To\'g\'ri javob!' : `вќЊ Xato! To'g'ri javob: ${letters[correctIdx]}. ${escapeHtml(q.answers[correctIdx].text)}`}
+        ${ans.correct ? '&#x2705; To'g'ri javob!' : `&#x274C; Xato! To'g'ri javob: ${letters[correctIdx]}. ${escapeHtml(q.answers[correctIdx].text)}`}
       </div>` : ''}
     </div>
 
@@ -1060,22 +1060,10 @@ function escapeHtml(str) {
 
 
 // ====== INIT ======
-const APP_VERSION = 'v2_webp'; // Versiya o'zgarganda cache tozalanadi
-const savedVersion = localStorage.getItem('pdd_version');
-
-if (savedVersion !== APP_VERSION) {
-  // Yangi versiya — eski cacheni tozala
-  localStorage.removeItem('pdd_state');
-  localStorage.setItem('pdd_version', APP_VERSION);
-}
-
-const _saved = loadState();
-if (!_saved || (!state.mainQuestions.length && !state.excQuestions.length)) {
-  render(); // Render empty state
-} else {
-  updateCounts();
-  render();
-}
+// Har safar sahifa ochilganda bo'sh holat
+// Foydalanuvchi o'zi "Fayl yuklash" tugmasi orqali JSON yuklaydi
+localStorage.removeItem('pdd_state');
+render();
 </script>
 </body>
 </html>
