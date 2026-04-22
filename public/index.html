@@ -1164,8 +1164,8 @@ function openSettingsModal() {
     
     <!-- Mode Bar -->
     <div class="mode-bar" style="margin-bottom: 20px; flex-direction: column; align-items: stretch;">
-      <button class="mode-btn" onclick="state.testStarted = false; document.getElementById('settings-modal').style.display='none'; document.body.classList.remove('testing-mode'); render();">
-        &#x1F6D1; Testdan chiqish (Bosh Ekranga qaytish)
+      <button class="mode-btn" style="background:var(--green); color:white; border:none; padding:15px; font-size:16px; font-weight:bold; border-radius:12px; margin-bottom:10px;" onclick="saveState(); state.testStarted = false; document.getElementById('settings-modal').style.display='none'; document.body.classList.remove('testing-mode'); showToast('Barcha testlar ayni ajratilgan holatida xavfsiz saqlandi!', 'success'); render();">
+        &#x1F4BE; Saqlash va Bosh Ekranga Qaytish
       </button>
       <div style="display:flex; gap:10px;">
         <label class="mode-btn" style="cursor:pointer; text-align:center; flex:1;">&#x1F4C1; Asosiyga yuklash
