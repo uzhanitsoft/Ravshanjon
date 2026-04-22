@@ -756,9 +756,15 @@
 </div>
 
 <!-- Download Bar -->
-<div class="download-bar" id="download-bar" style="display:none">
-  <button class="dl-btn" onclick="downloadJSON('main')" id="dl-main">&#x2B07; Asosiy bazani yuklab olish</button>
-  <button class="dl-btn exc" onclick="downloadJSON('exc')" id="dl-exc">&#x2B07; Istisnolarni yuklab olish</button>
+<div class="download-bar" id="download-bar" style="display:none; padding-bottom: calc(15px + env(safe-area-inset-bottom)); flex-wrap: wrap;">
+  <div style="display:flex; gap:10px; flex:1; min-width:280px;" id="dl-grp-main">
+    <button class="dl-btn" onclick="downloadJSON('main')" id="dl-main" style="flex:1">&#x2B07; Asosiy bazani yuklash</button>
+    <button class="dl-btn" onclick="clearSpecificState('main')" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid var(--red); max-width:60px;" title="Asosiyni tozalash">&#x1F5D1;</button>
+  </div>
+  <div style="display:flex; gap:10px; flex:1; min-width:280px;" id="dl-grp-exc">
+    <button class="dl-btn exc" onclick="downloadJSON('exc')" id="dl-exc" style="flex:1">&#x2B07; Istisnolarni yuklash</button>
+    <button class="dl-btn" onclick="clearSpecificState('exc')" style="background:rgba(239,68,68,0.1); color:var(--red); border:1px solid var(--red); max-width:60px;" title="Istisnoni tozalash">&#x1F5D1;</button>
+  </div>
 </div>
 
 <script>
@@ -800,8 +806,11 @@ function updateCounts() {
   document.getElementById('count-exc').textContent = state.excQuestions.length;
   const dlBar = document.getElementById('download-bar');
   dlBar.style.display = (state.mainQuestions.length || state.excQuestions.length) ? 'flex' : 'none';
-  document.getElementById('dl-main').disabled = !state.mainQuestions.length;
-  document.getElementById('dl-exc').disabled = !state.excQuestions.length;
+  
+  const dlGrpMain = document.getElementById('dl-grp-main');
+  const dlGrpExc = document.getElementById('dl-grp-exc');
+  if(dlGrpMain) dlGrpMain.style.display = state.mainQuestions.length ? 'flex' : 'none';
+  if(dlGrpExc) dlGrpExc.style.display = state.excQuestions.length ? 'flex' : 'none';
 }
 
 function showToast(msg, type='info') {
@@ -848,6 +857,22 @@ function clearState() {
     if(confirm('Barcha saqlangan malumotlarni va ozgarishlarni ochirib, boshidan boshlamoqchimisiz?')) {
         localStorage.removeItem('pdd_state');
         location.reload();
+    }
+}
+
+function clearSpecificState(tab) {
+    const tabName = tab === 'main' ? 'Asosiy baza' : 'Istisnolar bazasi';
+    if(confirm(`${tabName}dagi barcha savollarni o'chirib yubormoqchimisiz?`)) {
+        if (tab === 'main') state.mainQuestions = [];
+        else state.excQuestions = [];
+        
+        state.currentIndex = 0;
+        state.answered = {};
+        state.score = { correct: 0, wrong: 0 };
+        saveState();
+        updateCounts();
+        render();
+        showToast(`${tabName} muvaffaqiyatli tozalandi!`, 'success');
     }
 }
 // ====== TAB SWITCHING =======
