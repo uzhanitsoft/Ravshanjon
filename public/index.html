@@ -626,8 +626,15 @@
     }
     .anim-slide { animation: slideLeft 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
 
+    /* ========= TESTING MODE ========= */
+    body.testing-mode .header { display: none; }
+    body.testing-mode .tabs { display: none; }
+    body.testing-mode .download-bar { display: none !important; }
+    body.testing-mode .app { padding: 10px; padding-bottom: 20px; }
+
     @media (max-width: 600px) {
       .app { padding: 12px 10px 90px; }
+      body.testing-mode .app { padding: 10px; }
       .header h1 { font-size: 22px; }
       .question-card { padding: 16px; }
       .q-text { font-size: 15px; }
@@ -706,7 +713,8 @@ let state = {
   answered: {},       // { questionId: { selected, correct } }
   searchTerm: '',
   score: { correct: 0, wrong: 0 },
-  selectedAns: null
+  selectedAns: null,
+  testStarted: false
 };
 
 // ====== HELPERS ======
@@ -791,6 +799,7 @@ function switchTab(tab) {
   state.score = { correct: 0, wrong: 0 };
   state.searchTerm = '';
   state.selectedAns = null;
+  state.testStarted = false;
   document.getElementById('tab-main').classList.toggle('active', tab==='main');
   document.getElementById('tab-exc').classList.toggle('active', tab==='exc');
   render();
@@ -814,6 +823,7 @@ function handleFile(file) {
       state.answered = {};
       state.score = { correct: 0, wrong: 0 };
       state.selectedAns = null;
+      state.testStarted = false;
       updateCounts();
       showToast(`${data.length} ta savol yuklandi!`, 'success');
       render();
@@ -1004,12 +1014,68 @@ function render() {
       return;
     }
 
-    if (state.mode === 'list') renderList();
-    else renderQuestion(false);
+    if (state.mode === 'list') {
+      document.body.classList.remove('testing-mode');
+      renderList();
+    } else {
+      if (!state.testStarted) {
+        renderStartControl();
+      } else {
+        renderQuestion(false);
+      }
+    }
   } catch (err) {
     console.error("Render error:", err);
     showToast("Ekranga chiqarishda xatolik yuz berdi: " + err.message, "warn");
   }
+}
+
+function startTestMode() {
+  state.testStarted = true;
+  document.body.classList.add('testing-mode');
+  renderQuestion(true);
+}
+
+function exitTestMode() {
+  state.testStarted = false;
+  document.body.classList.remove('testing-mode');
+  render();
+}
+
+function renderStartControl() {
+  const questions = getCurrentQuestions();
+  const container = document.getElementById('content');
+  document.body.classList.remove('testing-mode');
+  updateCounts();
+  
+  container.innerHTML = `
+    <!-- Stats -->
+    <div class="stats-bar" style="margin-bottom: 20px;">
+      <div class="stat-card"><div class="num">${questions.length}</div><div class="label">Jami savollar</div></div>
+      <div class="stat-card"><div class="num" style="color:var(--green)">${state.score.correct}</div><div class="label">To'g'ri</div></div>
+      <div class="stat-card"><div class="num" style="color:var(--red)">${state.score.wrong}</div><div class="label">Xato</div></div>
+      <div class="stat-card"><div class="num">${Object.keys(state.answered).length}</div><div class="label">Javob berilgan</div></div>
+    </div>
+
+    <!-- Mode Bar -->
+    <div class="mode-bar">
+      <button class="mode-btn active" onclick="state.mode='test'; render()">&#x1F9EA; Test</button>
+      <button class="mode-btn" onclick="state.mode='list'; render()">&#x1F4C3; Ro'yxat</button>
+      <div class="spacer"></div>
+      <label class="mode-btn" style="cursor:pointer">&#x1F4C1; Boshqa fayl yuklash
+        <input type="file" accept=".json" style="display:none" onchange="handleFile(this.files[0])">
+      </label>
+    </div>
+    
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 40px 20px; text-align: center; margin-top: 20px; animation: scaleIn 0.5s ease;">
+      <div style="font-size: 60px; margin-bottom: 20px;">&#x1F680;</div>
+      <h2 style="margin-bottom: 15px; font-size: 24px;">Testga tayyormisiz?</h2>
+      <p style="color: var(--text2); margin-bottom: 30px; font-size: 15px; line-height: 1.6; max-width: 500px; margin-left: auto; margin-right: auto;">Test qulay va ravon ishlashi uchun to'liq ekranli tizim yoqiladi. Barcha xalaqit beruvchi elementlar bekitiladi.</p>
+      <button class="nav-btn" onclick="startTestMode()" style="width: 100%; max-width: 350px; font-size: 18px; padding: 18px; border-radius: 14px; background: linear-gradient(135deg, var(--primary), var(--accent)); display: inline-block;">
+        Testni Boshlash &#x25B6;&#xFE0F;
+      </button>
+    </div>
+  `;
 }
 
 function renderUploadZone() {
@@ -1039,49 +1105,21 @@ function renderQuestion(animate = false) {
   const container = document.getElementById('content');
   const animClass = animate ? 'anim-slide' : '';
   container.innerHTML = `
-    <!-- Stats -->
-    <div class="stats-bar">
-      <div class="stat-card"><div class="num">${questions.length}</div><div class="label">Jami savollar</div></div>
-      <div class="stat-card"><div class="num" style="color:var(--green)">${state.score.correct}</div><div class="label">To'g'ri</div></div>
-      <div class="stat-card"><div class="num" style="color:var(--red)">${state.score.wrong}</div><div class="label">Xato</div></div>
-      <div class="stat-card"><div class="num">${Object.keys(state.answered).length}</div><div class="label">Javob berilgan</div></div>
-    </div>
-
-    <!-- Mode Bar -->
-    <div class="mode-bar">
-      <button class="mode-btn ${state.mode==='test'?'active':''}" onclick="state.mode='test'; render()">&#x1F9EA; Test</button>
-      <button class="mode-btn ${state.mode==='list'?'active':''}" onclick="state.mode='list'; render()">&#x1F4C3; Ro'yxat</button>
-      <div class="spacer"></div>
-      <label class="mode-btn" for="file-input2" style="cursor:pointer">&#x1F4C1; Fayl yuklash
-        <input type="file" id="file-input2" accept=".json" style="display:none" onchange="handleFile(this.files[0])">
-      </label>
-    </div>
-
-    <!-- Progress -->
-    <div class="progress-bar">
+    <!-- Top Progress Line -->
+    <div class="progress-bar" style="margin-bottom: 20px;">
       <div class="progress-fill" style="width:${((state.currentIndex+1)/questions.length*100)}%"></div>
     </div>
 
-    <!-- Pagination dots -->
-    <div class="pagination">
-      ${questions.slice(Math.max(0, state.currentIndex-10), Math.min(questions.length, state.currentIndex+11)).map((pq, i) => {
-        const realIdx = Math.max(0, state.currentIndex-10) + i;
-        const a = state.answered[pq.id];
-        let cls = realIdx === state.currentIndex ? 'current' : '';
-        if (a && a.correct) cls += ' answered';
-        if (a && !a.correct) cls += ' wrong-dot';
-        return `<button class="page-dot ${cls}" onclick="goToQuestion(${realIdx})">${realIdx+1}</button>`;
-      }).join('')}
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+      <button class="nav-btn secondary" style="padding: 10px 16px; font-size: 13px; min-height: 40px; border-radius: 10px;" onclick="exitTestMode()">&#x2190; Chiqish</button>
+      <div style="text-align:right;">
+         <span class="q-number" style="font-size:14px; padding:6px 14px; display:inline-block; margin-bottom:6px;">Savol ${state.currentIndex+1} / ${questions.length}</span><br>
+         <span class="q-bilet">Bilet #${q.bilet_id} &#x2022; ID: ${q.id}</span>
+      </div>
     </div>
 
     <!-- Question Card -->
     <div class="question-card ${animClass}" key="${q.id}">
-      <div class="q-header">
-        <span class="q-number">Savol ${state.currentIndex+1} / ${questions.length}</span>
-        <span class="q-bilet">Bilet #${q.bilet_id} &#x2022; ID: ${q.id}</span>
-        <button class="q-move-btn" onclick="moveQuestion(${q.id})">&#x2197; ${otherTab}ga ko'chirish</button>
-      </div>
-
       <div class="q-text">${escapeHtml(q.savol)}</div>
 
       ${q.rasm ? `<img class="q-image" src="${q.rasm}" alt="Rasm" onerror="this.style.display='none'" loading="lazy">` : ''}
@@ -1112,14 +1150,18 @@ function renderQuestion(animate = false) {
       </div>` : ''}
     </div>
 
-    <!-- Navigation -->
-    <div class="nav-bar">
-      <button class="nav-btn secondary" onclick="prevQuestion()" ${state.currentIndex===0?'disabled':''}>&#x2190; Oldingi</button>
-      ${ans ? `
-        <button class="nav-btn" onclick="nextQuestion()" style="background: var(--green); color: white;">
+    <!-- Action Bar (Move & Nav) -->
+    <div style="display:flex; flex-direction:column; gap: 12px; margin-top: 20px;">
+      <button class="q-move-btn" style="width: 100%; padding: 16px; font-size: 15px; border-radius: 14px; background: rgba(234,179,8,0.08); border: 1px solid rgba(234,179,8,0.3); color: var(--yellow);" onclick="moveQuestion(${q.id})">
+        &#x2197; Ushbu savolni ${otherTab}ga ko'chirib o'tkazish
+      </button>
+      
+      <div class="nav-bar" style="margin-top: 0; align-items: stretch; justify-content: stretch; display: flex; gap: 10px;">
+        <button class="nav-btn secondary" style="flex: 1;" onclick="prevQuestion()" ${state.currentIndex===0?'disabled':''}>&#x2190; Oldingi</button>
+        <button class="nav-btn" style="flex: 1; ${ans ? 'background: var(--green); color: white;' : ''}" onclick="nextQuestion()">
           ${state.currentIndex < questions.length-1 ? 'Keyingi &#x2192;' : '&#x1F3C1; Yakunlash'}
         </button>
-      ` : ''}
+      </div>
     </div>
   `;
 }
