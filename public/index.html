@@ -828,7 +828,7 @@ function moveQuestion(qId) {
   if (src.length === 0) state.currentIndex = 0;
   updateCounts();
   const target = state.currentTab === 'main' ? 'Istisnolar' : 'Asosiy';
-  showToast(`Savol #${q.id} в†’ ${target}ga ko'chirildi`, 'success');
+  showToast(`Savol #${q.id} &#x2192; ${target}ga ko'chirildi`, 'success');
   render();
 }
 
@@ -1050,7 +1050,7 @@ function renderList() {
   const filtered = state.searchTerm
     ? questions.filter(q => (q.savol + q.savol_rus).toLowerCase().includes(state.searchTerm.toLowerCase()))
     : questions;
-  const otherTab = state.currentTab === 'main' ? 'Istisnolarga в†’' : 'в†ђ Asosiyga';
+  const otherTab = state.currentTab === 'main' ? 'Istisnolarga' : 'Asosiyga';
 
   const container = document.getElementById('content');
   container.innerHTML = `
