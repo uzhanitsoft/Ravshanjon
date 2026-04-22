@@ -728,10 +728,14 @@
   </div>
 
   <!-- Permanent Upload Button -->
-  <div id="upload-box" style="text-align: center; margin: 40px auto; max-width: 500px; padding: 20px;">
-    <input type="file" id="perm-file-input" accept=".json" style="display:none" onchange="handleFile(this.files[0])">
-    <button class="upload-btn" onclick="document.getElementById('perm-file-input').click()" style="width: 100%; padding: 25px; font-size: 24px; border-radius: 20px;">
-      &#x1F4C1; JSON Faylni Shu Yerdan Yuklang
+  <div id="upload-box" style="text-align: center; margin: 40px auto; max-width: 600px; padding: 20px; display: flex; gap: 10px;">
+    <input type="file" id="perm-main" accept=".json" style="display:none" onchange="handleFile(this.files[0], 'main')">
+    <button class="upload-btn" onclick="document.getElementById('perm-main').click()" style="flex: 1; padding: 20px; font-size: 18px; border-radius: 16px;">
+      &#x1F4C1; Asosiyga Yuklash
+    </button>
+    <input type="file" id="perm-exc" accept=".json" style="display:none" onchange="handleFile(this.files[0], 'exc')">
+    <button class="upload-btn" style="flex: 1; padding: 20px; font-size: 18px; border-radius: 16px; background: rgba(234,179,8,0.1); border-color: var(--yellow); color: var(--yellow);" onclick="document.getElementById('perm-exc').click()">
+      &#x26A0;&#xFE0F; Istisnoga Yuklash
     </button>
   </div>
 
@@ -861,7 +865,7 @@ function switchTab(tab) {
 }
 
 // ====== FILE LOADING ======
-function handleFile(file) {
+function handleFile(file, targetTab = null) {
   const reader = new FileReader();
   reader.onload = (e) => {
     try {
@@ -872,15 +876,26 @@ function handleFile(file) {
       }
       // Normalize: support both ptest format and raw format
       data = data.map((q, i) => normalizeQuestion(q, i));
-      if (state.currentTab === 'main') state.mainQuestions = data;
+      
+      const tabToUse = targetTab || state.currentTab;
+      if (tabToUse === 'main') state.mainQuestions = data;
       else state.excQuestions = data;
+      
+      state.currentTab = tabToUse;
       state.currentIndex = 0;
       state.answered = {};
       state.score = { correct: 0, wrong: 0 };
       state.selectedAns = null;
       state.testStarted = false;
+      
+      document.getElementById('tab-main').classList.toggle('active', tabToUse === 'main');
+      document.getElementById('tab-exc').classList.toggle('active', tabToUse === 'exc');
+      
       updateCounts();
-      showToast(`${data.length} ta savol yuklandi!`, 'success');
+      saveState(); // Autostate save after loading file
+      
+      const tabName = tabToUse === 'main' ? 'Asosiyga' : 'Istisnolarga';
+      showToast(`${data.length} ta savol ${tabName} yuklandi!`, 'success');
       render();
     } catch(err) {
       showToast('JSON o\'qishda xatolik: ' + err.message, 'warn');
@@ -938,11 +953,22 @@ function moveQuestion(qId) {
   const dst = state.currentTab === 'main' ? state.excQuestions : state.mainQuestions;
   const idx = src.findIndex(q => q.id === qId);
   if (idx === -1) return;
+  
   const [q] = src.splice(idx, 1);
-  dst.push(q);
+  
+  // Anti-Duplicate Shield
+  if (!dst.some(existing => existing.id === q.id)) {
+    dst.push(q);
+  } else {
+    showToast(`Bu savol allaqachon u yerda bor edi! Qayta qo'shilmadi.`, 'info');
+  }
+
   if (state.currentIndex >= src.length && src.length > 0) state.currentIndex = src.length - 1;
   if (src.length === 0) state.currentIndex = 0;
+  
   updateCounts();
+  saveState(); // Save after moving
+  
   const target = state.currentTab === 'main' ? 'Istisnolar' : 'Asosiy';
   showToast(`Savol #${q.id} &#x2192; ${target}ga ko'chirildi`, 'success');
   render();
@@ -998,17 +1024,17 @@ function selectAnswer(qId, ansIdx) {
   if (isCorrect) state.score.correct++;
   else state.score.wrong++;
   
+  const btns = document.querySelectorAll('.answer-btn');
   const correctIdx = q.answers.findIndex(a => a.correct);
-  const buttons = document.querySelectorAll('.answer-btn');
-  
-  buttons.forEach((btn, i) => {
+
+  btns.forEach((btn, i) => {
     btn.classList.add('disabled');
-    if (i === correctIdx) {
-      btn.classList.add('correct');
-    } else if (i === ansIdx && !isCorrect) {
-      btn.classList.add('wrong');
-    }
+    if (i === correctIdx) btn.classList.add('correct');
+    else if (i === ansIdx && !isCorrect) btn.classList.add('wrong');
   });
+
+  // Save progress!
+  saveState();
 
   const nextBtn = document.getElementById('next-btn-nav');
   if (nextBtn) {
@@ -1141,9 +1167,14 @@ function openSettingsModal() {
       <button class="mode-btn" onclick="state.testStarted = false; document.getElementById('settings-modal').style.display='none'; document.body.classList.remove('testing-mode'); render();">
         &#x1F6D1; Testdan chiqish (Bosh Ekranga qaytish)
       </button>
-      <label class="mode-btn" style="cursor:pointer; text-align:center;">&#x1F4C1; Boshqa fayl yuklash
-        <input type="file" accept=".json" style="display:none" onchange="document.getElementById('settings-modal').style.display='none'; handleFile(this.files[0]);">
-      </label>
+      <div style="display:flex; gap:10px;">
+        <label class="mode-btn" style="cursor:pointer; text-align:center; flex:1;">&#x1F4C1; Asosiyga yuklash
+          <input type="file" accept=".json" style="display:none" onchange="document.getElementById('settings-modal').style.display='none'; handleFile(this.files[0], 'main');">
+        </label>
+        <label class="mode-btn" style="cursor:pointer; text-align:center; flex:1; background:rgba(234,179,8,0.1); border-color:var(--yellow); color:var(--yellow);">&#x26A0;&#xFE0F; Istisnoga yuklash
+          <input type="file" accept=".json" style="display:none" onchange="document.getElementById('settings-modal').style.display='none'; handleFile(this.files[0], 'exc');">
+        </label>
+      </div>
     </div>
   `;
   document.getElementById('settings-modal').style.display = 'flex';
@@ -1169,8 +1200,8 @@ function renderStartControl() {
       <button class="mode-btn active" onclick="state.mode='test'; render()">&#x1F9EA; Test</button>
       <button class="mode-btn" onclick="state.mode='list'; render()">&#x1F4C3; Ro'yxat</button>
       <div class="spacer"></div>
-      <label class="mode-btn" style="cursor:pointer">&#x1F4C1; Boshqa fayl yuklash
-        <input type="file" accept=".json" style="display:none" onchange="handleFile(this.files[0])">
+      <label class="mode-btn" style="cursor:pointer">&#x1F4C1; Boshqa fayl yuklash (joriy bo'limga)
+        <input type="file" accept=".json" style="display:none" onchange="handleFile(this.files[0], state.currentTab)">
       </label>
     </div>
     
@@ -1313,7 +1344,9 @@ function escapeHtml(str) {
 
 // ====== INIT ======
 // Script <body> oxirida, DOM tayyor
-localStorage.removeItem('pdd_state');
+if(loadState()) {
+  updateCounts();
+}
 render();
 </script>
 </body>
