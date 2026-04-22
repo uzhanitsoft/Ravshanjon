@@ -1016,12 +1016,12 @@ function selectAnswer(qId, ansIdx) {
     nextBtn.style.color = 'white';
   }
 
-  // Avtomatik o'tish (1 sekund)
+  // Avtomatik o'tish (0.6 sekund)
   setTimeout(() => {
     if (state.currentIndex === questions.indexOf(q)) {
       nextQuestion();
     }
-  }, 1000);
+  }, 600);
 }
 
 function nextQuestion() {
@@ -1130,6 +1130,7 @@ function openSettingsModal() {
     <!-- Stats -->
     <div class="stats-bar" style="margin-bottom: 20px;">
       <div class="stat-card"><div class="num">${questions.length}</div><div class="label">Jami</div></div>
+      <div class="stat-card"><div class="num" style="color:var(--yellow)">${state.excQuestions.length}</div><div class="label">Istisnolarda</div></div>
       <div class="stat-card"><div class="num" style="color:var(--green)">${state.score.correct}</div><div class="label">To'g'ri</div></div>
       <div class="stat-card"><div class="num" style="color:var(--red)">${state.score.wrong}</div><div class="label">Xato</div></div>
     </div>
