@@ -328,32 +328,31 @@
     }
 
     .answer-btn.correct {
-      border-color: var(--green-border) !important;
-      background: var(--green-bg) !important;
-      animation: correctPulse 0.5s ease;
+      border-color: #34a853 !important;
+      background: #34a853 !important;
+      color: #fff !important;
     }
     .answer-btn.correct .letter {
-      background: var(--green);
+      background: #2b8240;
       color: #fff;
+      border-right-color: transparent;
     }
 
     .answer-btn.wrong {
-      border-color: var(--red-border) !important;
-      background: var(--red-bg) !important;
-      animation: wrongShake 0.5s ease;
+      border-color: #ea4335 !important;
+      background: #ea4335 !important;
+      color: #fff !important;
     }
     .answer-btn.wrong .letter {
-      background: var(--red);
+      background: #b33328;
       color: #fff;
+      border-right-color: transparent;
     }
-    .answer-btn.disabled { pointer-events: none; opacity: 0.6; }
-    .answer-btn.correct.disabled { opacity: 1; }
+    .answer-btn.disabled { pointer-events: none; opacity: 1; }
 
     .answer-btn.selected-temp {
       border-color: var(--primary) !important;
       background: rgba(99,102,241,0.15) !important;
-      transform: translateX(4px) scale(1.01);
-      box-shadow: 0 4px 15px rgba(99,102,241,0.2);
     }
     .answer-btn.selected-temp .letter {
       background: var(--primary);
@@ -362,13 +361,13 @@
 
     /* Highlight correct answer when wrong is selected */
     .answer-btn.correct-highlight {
-      border-color: var(--green) !important;
-      background: rgba(34,197,94,0.1) !important;
-      box-shadow: 0 0 15px rgba(34,197,94,0.2);
+      border-color: #34a853 !important;
+      background: var(--surface) !important;
     }
     .answer-btn.correct-highlight .letter {
-      background: var(--green);
+      background: #34a853;
       color: #fff;
+      border-right-color: transparent;
     }
 
     /* ========= NAVIGATION ========= */
@@ -1228,10 +1227,10 @@ function renderQuestion(animate = false) {
 
       <!-- Action Bar (Move & Nav) directly below answers -->
       <div class="nav-bar" style="margin-top: 16px; align-items: stretch; justify-content: stretch; display: flex; gap: 10px;">
-        <button class="nav-btn secondary" style="flex: 1;" onclick="prevQuestion()" ${state.currentIndex===0?'disabled':''}>&#x2190; Oldingi</button>
-        <button class="nav-btn" style="flex: 1; ${ans ? 'background: var(--green); color: white;' : ''}" onclick="nextQuestion()">
+        <button class="nav-btn" style="flex: 1; ${ans ? 'background: #34a853; color: white;' : ''}" onclick="nextQuestion()">
           ${state.currentIndex < questions.length-1 ? 'Keyingi &#x2192;' : '&#x1F3C1; Yakunlash'}
         </button>
+        <button class="nav-btn secondary" style="flex: 1;" onclick="prevQuestion()" ${state.currentIndex===0?'disabled':''}>&#x2190; Oldingi</button>
       </div>
     </div>
   `;
