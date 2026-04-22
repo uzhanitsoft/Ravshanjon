@@ -346,6 +346,17 @@
     .answer-btn.disabled { pointer-events: none; opacity: 0.6; }
     .answer-btn.correct.disabled { opacity: 1; }
 
+    .answer-btn.selected-temp {
+      border-color: var(--primary) !important;
+      background: rgba(99,102,241,0.15) !important;
+      transform: translateX(4px) scale(1.01);
+      box-shadow: 0 4px 15px rgba(99,102,241,0.2);
+    }
+    .answer-btn.selected-temp .letter {
+      background: var(--primary);
+      color: #fff;
+    }
+
     /* ========= NAVIGATION ========= */
     .nav-bar {
       display: flex;
@@ -672,7 +683,8 @@ let state = {
   currentIndex: 0,
   answered: {},       // { questionId: { selected, correct } }
   searchTerm: '',
-  score: { correct: 0, wrong: 0 }
+  score: { correct: 0, wrong: 0 },
+  selectedAns: null
 };
 
 // ====== HELPERS ======
@@ -749,6 +761,7 @@ function switchTab(tab) {
   state.answered = {};
   state.score = { correct: 0, wrong: 0 };
   state.searchTerm = '';
+  state.selectedAns = null;
   document.getElementById('tab-main').classList.toggle('active', tab==='main');
   document.getElementById('tab-exc').classList.toggle('active', tab==='exc');
   render();
@@ -771,6 +784,7 @@ function handleFile(file) {
       state.currentIndex = 0;
       state.answered = {};
       state.score = { correct: 0, wrong: 0 };
+      state.selectedAns = null;
       updateCounts();
       showToast(`${data.length} ta savol yuklandi!`, 'success');
       render();
@@ -874,17 +888,25 @@ function downloadJSON(which) {
 // ====== ANSWER HANDLING ======
 function selectAnswer(qId, ansIdx) {
   if (state.answered[qId]) return;
+  state.selectedAns = ansIdx;
+  renderQuestion();
+}
+
+function checkAnswer(qId) {
+  if (state.answered[qId] || state.selectedAns === null) return;
   const questions = getCurrentQuestions();
   const q = questions.find(x => x.id === qId);
   if (!q) return;
-  const isCorrect = q.answers[ansIdx].correct;
-  state.answered[qId] = { selected: ansIdx, correct: isCorrect };
+  const isCorrect = q.answers[state.selectedAns].correct;
+  state.answered[qId] = { selected: state.selectedAns, correct: isCorrect };
   if (isCorrect) state.score.correct++;
   else state.score.wrong++;
+  state.selectedAns = null;
   renderQuestion();
 }
 
 function nextQuestion() {
+  state.selectedAns = null;
   const questions = getCurrentQuestions();
   if (state.currentIndex < questions.length - 1) {
     state.currentIndex++;
@@ -895,6 +917,7 @@ function nextQuestion() {
 }
 
 function prevQuestion() {
+  state.selectedAns = null;
   if (state.currentIndex > 0) {
     state.currentIndex--;
     renderQuestion();
@@ -902,6 +925,7 @@ function prevQuestion() {
 }
 
 function goToQuestion(idx) {
+  state.selectedAns = null;
   state.currentIndex = idx;
   renderQuestion();
 }
@@ -1040,6 +1064,8 @@ function renderQuestion() {
             if (i === correctIdx) cls = 'correct';
             else if (i === ans.selected && !ans.correct) cls = 'wrong';
             else cls = 'disabled';
+          } else if (state.selectedAns === i) {
+            cls = 'selected-temp';
           }
           return `<button class="answer-btn ${cls}" onclick="selectAnswer(${q.id}, ${i})">
             <span class="letter">${letters[i]}</span>
@@ -1060,9 +1086,15 @@ function renderQuestion() {
     <!-- Navigation -->
     <div class="nav-bar">
       <button class="nav-btn secondary" onclick="prevQuestion()" ${state.currentIndex===0?'disabled':''}>&#x2190; Oldingi</button>
-      <button class="nav-btn" onclick="nextQuestion()">
-        ${state.currentIndex < questions.length-1 ? 'Keyingi &#x2192;' : '&#x1F3C1; Yakunlash'}
-      </button>
+      ${!ans ? `
+        <button class="nav-btn" onclick="checkAnswer(${q.id})" ${state.selectedAns !== null ? '' : 'disabled'} style="background: var(--accent);">
+          &#x2714; Javobni tasdiqlash
+        </button>
+      ` : `
+        <button class="nav-btn" onclick="nextQuestion()">
+          ${state.currentIndex < questions.length-1 ? 'Keyingi &#x2192;' : '&#x1F3C1; Yakunlash'}
+        </button>
+      `}
     </div>
   `;
 }
