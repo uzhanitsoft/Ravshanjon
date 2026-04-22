@@ -138,6 +138,22 @@
     .upload-zone h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
     .upload-zone p { color: var(--text2); font-size: 13px; }
     .upload-zone input { display: none; }
+    .upload-btn {
+      margin-top: 20px;
+      padding: 16px 40px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: var(--transition);
+      display: inline-block;
+      min-width: 200px;
+    }
+    .upload-btn:hover { background: var(--primary-dark, #4f46e5); transform: translateY(-2px); }
 
     /* ========= STATS BAR ========= */
     .stats-bar {
@@ -924,15 +940,16 @@ function render() {
 
 function renderUploadZone() {
   return `
-    <label class="upload-zone" id="upload-zone" for="file-input"
-         ondragover="event.preventDefault(); this.classList.add('drag-over')"
-         ondragleave="this.classList.remove('drag-over')"
-         ondrop="event.preventDefault(); this.classList.remove('drag-over'); handleFile(event.dataTransfer.files[0])">
+    <div class="upload-zone" id="upload-zone">
       <div class="icon">&#x1F4C2;</div>
       <h3>JSON faylni yuklang</h3>
-      <p>Fayl tanlash uchun bosing yoki shu yerga tashlang</p>
-      <input type="file" id="file-input" accept=".json" style="display:none" onchange="handleFile(this.files[0])">
-    </label>
+      <p>Quyidagi tugmani bosing</p>
+      <input type="file" id="file-input" accept=".json"
+             style="display:none" onchange="handleFile(this.files[0])">
+      <button class="upload-btn" onclick="document.getElementById('file-input').click()">
+        &#x1F4C1; Fayl tanlash
+      </button>
+    </div>
   `;
 }
 
@@ -1079,10 +1096,10 @@ function escapeHtml(str) {
 
 
 // ====== INIT ======
-// Har safar sahifa ochilganda bo'sh holat
-// Foydalanuvchi o'zi "Fayl yuklash" tugmasi orqali JSON yuklaydi
-localStorage.removeItem('pdd_state');
-render();
+document.addEventListener('DOMContentLoaded', function() {
+  localStorage.removeItem('pdd_state');
+  render();
+});
 </script>
 </body>
 </html>
