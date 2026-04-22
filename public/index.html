@@ -632,6 +632,49 @@
     body.testing-mode .download-bar { display: none !important; }
     body.testing-mode .app { padding: 10px; padding-bottom: 20px; }
 
+    /* Floating Menu Button */
+    .fab-btn {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      width: 44px;
+      height: 44px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      color: var(--text);
+    }
+    body.testing-mode .fab-btn { display: flex; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(5px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-content {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 500px;
+      padding: 24px;
+      animation: scaleIn 0.3s ease;
+    }
+
     @media (max-width: 600px) {
       .app { padding: 12px 10px 90px; }
       body.testing-mode .app { padding: 10px; }
@@ -694,6 +737,18 @@
 
   <!-- Content -->
   <div id="content"></div>
+</div>
+
+<!-- Floating Settings Button for testing mode -->
+<button class="fab-btn" onclick="openSettingsModal()">&#x2699;&#xFE0F;</button>
+
+<!-- Settings Modal -->
+<div id="settings-modal" class="modal-overlay" onclick="this.style.display='none'">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">&#x2699;&#xFE0F; Boshqaruv Paneli</div>
+    <div id="modal-body"></div>
+    <button class="nav-btn secondary" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('settings-modal').style.display='none'">Yopish</button>
+  </div>
 </div>
 
 <!-- Download Bar -->
@@ -1042,6 +1097,30 @@ function exitTestMode() {
   render();
 }
 
+function openSettingsModal() {
+  const questions = getCurrentQuestions();
+  let modalBody = document.getElementById('modal-body');
+  modalBody.innerHTML = `
+    <!-- Stats -->
+    <div class="stats-bar" style="margin-bottom: 20px;">
+      <div class="stat-card"><div class="num">${questions.length}</div><div class="label">Jami</div></div>
+      <div class="stat-card"><div class="num" style="color:var(--green)">${state.score.correct}</div><div class="label">To'g'ri</div></div>
+      <div class="stat-card"><div class="num" style="color:var(--red)">${state.score.wrong}</div><div class="label">Xato</div></div>
+    </div>
+    
+    <!-- Mode Bar -->
+    <div class="mode-bar" style="margin-bottom: 20px; flex-direction: column; align-items: stretch;">
+      <button class="mode-btn" onclick="state.testStarted = false; document.getElementById('settings-modal').style.display='none'; document.body.classList.remove('testing-mode'); render();">
+        &#x1F6D1; Testdan chiqish (Bosh Ekranga qaytish)
+      </button>
+      <label class="mode-btn" style="cursor:pointer; text-align:center;">&#x1F4C1; Boshqa fayl yuklash
+        <input type="file" accept=".json" style="display:none" onchange="document.getElementById('settings-modal').style.display='none'; handleFile(this.files[0]);">
+      </label>
+    </div>
+  `;
+  document.getElementById('settings-modal').style.display = 'flex';
+}
+
 function renderStartControl() {
   const questions = getCurrentQuestions();
   const container = document.getElementById('content');
@@ -1111,7 +1190,9 @@ function renderQuestion(animate = false) {
     </div>
 
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-      <button class="nav-btn secondary" style="padding: 10px 16px; font-size: 13px; min-height: 40px; border-radius: 10px;" onclick="exitTestMode()">&#x2190; Chiqish</button>
+      <button class="q-move-btn" style="padding: 10px 16px; font-size: 13px; font-weight: bold; border-radius: 10px; background: rgba(234,179,8,0.1); border-color: var(--yellow);" onclick="moveQuestion(${q.id})">
+        &#x2197; ${otherTab}ga ko'chirish
+      </button>
       <div style="text-align:right;">
          <span class="q-number" style="font-size:14px; padding:6px 14px; display:inline-block; margin-bottom:6px;">Savol ${state.currentIndex+1} / ${questions.length}</span><br>
          <span class="q-bilet">Bilet #${q.bilet_id} &#x2022; ID: ${q.id}</span>
@@ -1141,22 +1222,8 @@ function renderQuestion(animate = false) {
         }).join('')}
       </div>
 
-      ${ans ? `
-      <div style="margin-top:16px; padding:12px 16px; border-radius:10px; font-size:14px; font-weight:600;
-        background: ${ans.correct ? 'var(--green-bg)' : 'var(--red-bg)'};
-        border: 1px solid ${ans.correct ? 'var(--green-border)' : 'var(--red-border)'};
-        color: ${ans.correct ? 'var(--green)' : 'var(--red)'}">
-        ${ans.correct ? "&#x2705; To'g'ri javob!" : `&#x274C; Xato! To'g'ri javob: ${letters[correctIdx]}. ${escapeHtml(q.answers[correctIdx].text)}`}
-      </div>` : ''}
-    </div>
-
-    <!-- Action Bar (Move & Nav) -->
-    <div style="display:flex; flex-direction:column; gap: 12px; margin-top: 20px;">
-      <button class="q-move-btn" style="width: 100%; padding: 16px; font-size: 15px; border-radius: 14px; background: rgba(234,179,8,0.08); border: 1px solid rgba(234,179,8,0.3); color: var(--yellow);" onclick="moveQuestion(${q.id})">
-        &#x2197; Ushbu savolni ${otherTab}ga ko'chirib o'tkazish
-      </button>
-      
-      <div class="nav-bar" style="margin-top: 0; align-items: stretch; justify-content: stretch; display: flex; gap: 10px;">
+      <!-- Action Bar (Move & Nav) directly below answers -->
+      <div class="nav-bar" style="margin-top: 16px; align-items: stretch; justify-content: stretch; display: flex; gap: 10px;">
         <button class="nav-btn secondary" style="flex: 1;" onclick="prevQuestion()" ${state.currentIndex===0?'disabled':''}>&#x2190; Oldingi</button>
         <button class="nav-btn" style="flex: 1; ${ans ? 'background: var(--green); color: white;' : ''}" onclick="nextQuestion()">
           ${state.currentIndex < questions.length-1 ? 'Keyingi &#x2192;' : '&#x1F3C1; Yakunlash'}
