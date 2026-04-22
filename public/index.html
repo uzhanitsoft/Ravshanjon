@@ -1014,6 +1014,7 @@ function selectAnswer(qId, ansIdx) {
   if (nextBtn) {
     nextBtn.style.background = '#34a853';
     nextBtn.style.color = 'white';
+    nextBtn.disabled = false;
   }
 
   // Avtomatik o'tish (0.6 sekund)
@@ -1251,7 +1252,7 @@ function renderQuestion(animate = false) {
 
       <!-- Action Bar (Move & Nav) directly below answers -->
       <div class="nav-bar" style="margin-top: 16px; align-items: stretch; justify-content: stretch; display: flex; gap: 10px;">
-        <button id="next-btn-nav" class="nav-btn" style="flex: 1; ${ans ? 'background: #34a853; color: white;' : ''}" onclick="nextQuestion()">
+        <button id="next-btn-nav" class="nav-btn" style="flex: 1; ${ans ? 'background: #34a853; color: white;' : ''}" onclick="nextQuestion()" ${!ans ? 'disabled' : ''}>
           ${state.currentIndex < questions.length-1 ? 'Keyingi &#x2192;' : '&#x1F3C1; Yakunlash'}
         </button>
         <button class="nav-btn secondary" style="flex: 1;" onclick="prevQuestion()" ${state.currentIndex===0?'disabled':''}>&#x2190; Oldingi</button>
