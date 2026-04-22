@@ -688,6 +688,13 @@ let state = {
 };
 
 // ====== HELPERS ======
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/[&<>"']/g, function(m) {
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[m];
+  });
+}
+
 function getCurrentQuestions() {
   return state.currentTab === 'main' ? state.mainQuestions : state.excQuestions;
 }
@@ -1079,7 +1086,7 @@ function renderQuestion() {
         background: ${ans.correct ? 'var(--green-bg)' : 'var(--red-bg)'};
         border: 1px solid ${ans.correct ? 'var(--green-border)' : 'var(--red-border)'};
         color: ${ans.correct ? 'var(--green)' : 'var(--red)'}">
-        ${ans.correct ? '&#x2705; To'g'ri javob!' : `&#x274C; Xato! To'g'ri javob: ${letters[correctIdx]}. ${escapeHtml(q.answers[correctIdx].text)}`}
+        ${ans.correct ? "&#x2705; To'g'ri javob!" : `&#x274C; Xato! To'g'ri javob: ${letters[correctIdx]}. ${escapeHtml(q.answers[correctIdx].text)}`}
       </div>` : ''}
     </div>
 
