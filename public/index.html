@@ -582,13 +582,30 @@
     @media (max-width: 600px) {
       .app { padding: 12px 10px 90px; }
       .header h1 { font-size: 22px; }
-      .question-card { padding: 20px; }
+      .question-card { padding: 16px; }
       .q-text { font-size: 15px; }
       .stats-bar { gap: 6px; }
       .stat-card { padding: 10px 12px; }
       .stat-card .num { font-size: 20px; }
-      .search-input { width: 140px; }
+      .search-input { width: 100px; }
       .download-bar { flex-wrap: wrap; gap: 8px; }
+      .mode-bar { flex-wrap: wrap; gap: 6px; }
+      .mode-btn, label.mode-btn { 
+        padding: 8px 12px; 
+        font-size: 13px;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+      }
+      .upload-zone { 
+        padding: 40px 20px;
+        min-height: 250px;
+      }
+      .upload-zone .icon { font-size: 52px; }
+      .upload-zone h3 { font-size: 20px; }
+      .nav-btn { min-height: 48px; font-size: 15px; }
+      .answer-btn { padding: 14px 16px; font-size: 14px; min-height: 52px; }
+      .q-move-btn { font-size: 11px; padding: 4px 8px; }
     }
   </style>
 </head>
@@ -907,15 +924,15 @@ function render() {
 
 function renderUploadZone() {
   return `
-    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()"
+    <label class="upload-zone" id="upload-zone" for="file-input"
          ondragover="event.preventDefault(); this.classList.add('drag-over')"
          ondragleave="this.classList.remove('drag-over')"
          ondrop="event.preventDefault(); this.classList.remove('drag-over'); handleFile(event.dataTransfer.files[0])">
       <div class="icon">&#x1F4C2;</div>
       <h3>JSON faylni yuklang</h3>
       <p>Fayl tanlash uchun bosing yoki shu yerga tashlang</p>
-      <input type="file" id="file-input" accept=".json" onchange="handleFile(this.files[0])">
-    </div>
+      <input type="file" id="file-input" accept=".json" style="display:none" onchange="handleFile(this.files[0])">
+    </label>
   `;
 }
 
@@ -943,8 +960,9 @@ function renderQuestion() {
       <button class="mode-btn ${state.mode==='test'?'active':''}" onclick="state.mode='test'; render()">&#x1F9EA; Test</button>
       <button class="mode-btn ${state.mode==='list'?'active':''}" onclick="state.mode='list'; render()">&#x1F4C3; Ro'yxat</button>
       <div class="spacer"></div>
-      <button class="mode-btn" onclick="document.getElementById('file-input2').click()">&#x1F4C1; Fayl yuklash</button>
-      <input type="file" id="file-input2" accept=".json" style="display:none" onchange="handleFile(this.files[0])">
+      <label class="mode-btn" for="file-input2" style="cursor:pointer">&#x1F4C1; Fayl yuklash
+        <input type="file" id="file-input2" accept=".json" style="display:none" onchange="handleFile(this.files[0])">
+      </label>
     </div>
 
     <!-- Progress -->
@@ -1031,8 +1049,9 @@ function renderList() {
       <div class="spacer"></div>
       <input class="search-input" type="text" placeholder="&#x1F50D; Qidirish..." value="${state.searchTerm}"
              oninput="state.searchTerm=this.value; renderList()">
-      <button class="mode-btn" onclick="document.getElementById('file-input3').click()">&#x1F4C1; Fayl</button>
-      <input type="file" id="file-input3" accept=".json" style="display:none" onchange="handleFile(this.files[0])">
+      <label class="mode-btn" for="file-input3" style="cursor:pointer">&#x1F4C1; Fayl
+        <input type="file" id="file-input3" accept=".json" style="display:none" onchange="handleFile(this.files[0])">
+      </label>
     </div>
 
     ${filtered.length ? `
