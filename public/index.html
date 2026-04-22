@@ -290,19 +290,21 @@
     .answer-btn {
       display: flex;
       align-items: center;
-      gap: 14px;
-      padding: 14px 18px;
-      border: 1.5px solid var(--border);
-      background: rgba(30,41,70,0.4);
+      gap: 16px;
+      padding: 16px 20px;
+      border: 2px solid var(--border);
+      background: rgba(30,41,70,0.6);
       color: var(--text);
       font-family: inherit;
-      font-size: 15px;
-      line-height: 1.4;
-      border-radius: var(--radius-sm);
+      font-size: 16px;
+      line-height: 1.5;
+      border-radius: 14px;
       cursor: pointer;
-      transition: all 0.25s ease;
+      transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
       text-align: left;
       width: 100%;
+      position: relative;
+      overflow: hidden;
     }
     .answer-btn:hover:not(.disabled) {
       border-color: var(--accent);
@@ -354,6 +356,17 @@
     }
     .answer-btn.selected-temp .letter {
       background: var(--primary);
+      color: #fff;
+    }
+
+    /* Highlight correct answer when wrong is selected */
+    .answer-btn.correct-highlight {
+      border-color: var(--green) !important;
+      background: rgba(34,197,94,0.1) !important;
+      box-shadow: 0 0 15px rgba(34,197,94,0.2);
+    }
+    .answer-btn.correct-highlight .letter {
+      background: var(--green);
       color: #fff;
     }
 
@@ -606,6 +619,13 @@
     .page-dot.answered { background: rgba(34,197,94,0.15); border-color: var(--green-border); color: var(--green); }
     .page-dot.wrong-dot { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
 
+    /* Quick slide animation for question change */
+    @keyframes slideLeft {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .anim-slide { animation: slideLeft 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+
     @media (max-width: 600px) {
       .app { padding: 12px 10px 90px; }
       .header h1 { font-size: 22px; }
@@ -630,8 +650,10 @@
       }
       .upload-zone .icon { font-size: 52px; }
       .upload-zone h3 { font-size: 20px; }
-      .nav-btn { min-height: 48px; font-size: 15px; }
-      .answer-btn { padding: 14px 16px; font-size: 14px; min-height: 52px; }
+      .nav-bar { flex-direction: column; gap: 12px; }
+      .nav-btn { min-height: 54px; font-size: 16px; width: 100%; justify-content: center; display: flex; align-items: center; }
+      .answer-btn { padding: 16px; font-size: 15px; min-height: 60px; border-radius: 12px; }
+      .answer-btn .letter { width: 36px; height: 36px; font-size: 15px; }
       .q-move-btn { font-size: 11px; padding: 4px 8px; }
     }
   </style>
@@ -895,21 +917,20 @@ function downloadJSON(which) {
 // ====== ANSWER HANDLING ======
 function selectAnswer(qId, ansIdx) {
   if (state.answered[qId]) return;
-  state.selectedAns = ansIdx;
-  renderQuestion();
-}
-
-function checkAnswer(qId) {
-  if (state.answered[qId] || state.selectedAns === null) return;
   const questions = getCurrentQuestions();
   const q = questions.find(x => x.id === qId);
   if (!q) return;
-  const isCorrect = q.answers[state.selectedAns].correct;
-  state.answered[qId] = { selected: state.selectedAns, correct: isCorrect };
+  
+  const isCorrect = q.answers[ansIdx].correct;
+  state.answered[qId] = { selected: ansIdx, correct: isCorrect };
+  
   if (isCorrect) state.score.correct++;
   else state.score.wrong++;
-  state.selectedAns = null;
+  
+  // To avoid auto-scroll jump, explicitly preserve scroll depth
+  const scrollPos = window.scrollY;
   renderQuestion();
+  setTimeout(() => window.scrollTo(0, scrollPos), 0);
 }
 
 function nextQuestion() {
@@ -917,7 +938,7 @@ function nextQuestion() {
   const questions = getCurrentQuestions();
   if (state.currentIndex < questions.length - 1) {
     state.currentIndex++;
-    renderQuestion();
+    renderQuestion(true); // use animation
   } else {
     showResults();
   }
@@ -927,14 +948,14 @@ function prevQuestion() {
   state.selectedAns = null;
   if (state.currentIndex > 0) {
     state.currentIndex--;
-    renderQuestion();
+    renderQuestion(true);
   }
 }
 
 function goToQuestion(idx) {
   state.selectedAns = null;
   state.currentIndex = idx;
-  renderQuestion();
+  renderQuestion(true);
 }
 
 // ====== RESULTS ======
@@ -984,7 +1005,7 @@ function render() {
     }
 
     if (state.mode === 'list') renderList();
-    else renderQuestion();
+    else renderQuestion(false);
   } catch (err) {
     console.error("Render error:", err);
     showToast("Ekranga chiqarishda xatolik yuz berdi: " + err.message, "warn");
@@ -1006,7 +1027,7 @@ function renderUploadZone() {
   `;
 }
 
-function renderQuestion() {
+function renderQuestion(animate = false) {
   const questions = getCurrentQuestions();
   if (!questions.length) return render();
   const q = questions[state.currentIndex];
@@ -1016,6 +1037,7 @@ function renderQuestion() {
   const letters = ['A','B','C','D','E'];
 
   const container = document.getElementById('content');
+  const animClass = animate ? 'anim-slide' : '';
   container.innerHTML = `
     <!-- Stats -->
     <div class="stats-bar">
@@ -1053,7 +1075,7 @@ function renderQuestion() {
     </div>
 
     <!-- Question Card -->
-    <div class="question-card" key="${q.id}">
+    <div class="question-card ${animClass}" key="${q.id}">
       <div class="q-header">
         <span class="q-number">Savol ${state.currentIndex+1} / ${questions.length}</span>
         <span class="q-bilet">Bilet #${q.bilet_id} &#x2022; ID: ${q.id}</span>
@@ -1070,9 +1092,9 @@ function renderQuestion() {
           if (ans) {
             if (i === correctIdx) cls = 'correct';
             else if (i === ans.selected && !ans.correct) cls = 'wrong';
+            // User selected wrong, auto-highlight the right one
+            else if (!ans.correct && i === correctIdx) cls = 'correct-highlight';
             else cls = 'disabled';
-          } else if (state.selectedAns === i) {
-            cls = 'selected-temp';
           }
           return `<button class="answer-btn ${cls}" onclick="selectAnswer(${q.id}, ${i})">
             <span class="letter">${letters[i]}</span>
@@ -1093,15 +1115,11 @@ function renderQuestion() {
     <!-- Navigation -->
     <div class="nav-bar">
       <button class="nav-btn secondary" onclick="prevQuestion()" ${state.currentIndex===0?'disabled':''}>&#x2190; Oldingi</button>
-      ${!ans ? `
-        <button class="nav-btn" onclick="checkAnswer(${q.id})" ${state.selectedAns !== null ? '' : 'disabled'} style="background: var(--accent);">
-          &#x2714; Javobni tasdiqlash
-        </button>
-      ` : `
-        <button class="nav-btn" onclick="nextQuestion()">
+      ${ans ? `
+        <button class="nav-btn" onclick="nextQuestion()" style="background: var(--green); color: white;">
           ${state.currentIndex < questions.length-1 ? 'Keyingi &#x2192;' : '&#x1F3C1; Yakunlash'}
         </button>
-      `}
+      ` : ''}
     </div>
   `;
 }
