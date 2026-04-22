@@ -1175,6 +1175,9 @@ function openSettingsModal() {
           <input type="file" accept=".json" style="display:none" onchange="document.getElementById('settings-modal').style.display='none'; handleFile(this.files[0], 'exc');">
         </label>
       </div>
+      <button class="mode-btn" style="background:rgba(239,68,68,0.1); border-color:var(--red); color:var(--red); margin-top:10px; width:100%;" onclick="clearState()">
+        &#x1F5D1; Barcha yuklangan bazalarni o'chirish (Tozalash)
+      </button>
     </div>
   `;
   document.getElementById('settings-modal').style.display = 'flex';
