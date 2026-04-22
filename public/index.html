@@ -644,6 +644,14 @@
     </button>
   </div>
 
+  <!-- Permanent Upload Button -->
+  <div style="text-align: center; margin: 20px 0;">
+    <input type="file" id="perm-file-input" accept=".json" style="display:none" onchange="handleFile(this.files[0])">
+    <button class="upload-btn" onclick="document.getElementById('perm-file-input').click()" style="width: 100%; max-width: 300px;">
+      &#x1F4C1; JSON Fayl yuklash
+    </button>
+  </div>
+
   <!-- Content -->
   <div id="content"></div>
 </div>
