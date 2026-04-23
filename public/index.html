@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PDD Test Manager &#8212; Yo&#39;l Harakati Qoidalari</title>
+  <title>PDD Test Manager вЂ” Yo'l Harakati Qoidalari</title>
   <meta name="description" content="O'zbekiston PDD savollar bazasini boshqarish va test qilish ilovasi">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -138,22 +138,6 @@
     .upload-zone h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
     .upload-zone p { color: var(--text2); font-size: 13px; }
     .upload-zone input { display: none; }
-    .upload-btn {
-      margin-top: 20px;
-      padding: 16px 40px;
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      border-radius: 14px;
-      font-size: 18px;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: inherit;
-      transition: var(--transition);
-      display: inline-block;
-      min-width: 200px;
-    }
-    .upload-btn:hover { background: var(--primary-dark, #4f46e5); transform: translateY(-2px); }
 
     /* ========= STATS BAR ========= */
     .stats-bar {
@@ -289,23 +273,20 @@
 
     .answer-btn {
       display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 12px 14px;
-      border: 2px solid var(--border);
-      background: rgba(30,41,70,0.6);
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      border: 1.5px solid var(--border);
+      background: rgba(30,41,70,0.4);
       color: var(--text);
       font-family: inherit;
       font-size: 15px;
       line-height: 1.4;
-      border-radius: 12px;
+      border-radius: var(--radius-sm);
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transition: all 0.25s ease;
       text-align: left;
       width: 100%;
-      position: relative;
-      overflow: hidden;
-      min-height: 52px;
     }
     .answer-btn:hover:not(.disabled) {
       border-color: var(--accent);
@@ -313,12 +294,12 @@
       transform: translateX(4px);
     }
     .answer-btn .letter {
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 6px;
+      border-radius: 8px;
       background: rgba(99,130,255,0.1);
       font-weight: 700;
       font-size: 14px;
@@ -328,47 +309,26 @@
     }
 
     .answer-btn.correct {
-      border-color: #34a853 !important;
-      background: #34a853 !important;
-      color: #fff !important;
+      border-color: var(--green-border) !important;
+      background: var(--green-bg) !important;
+      animation: correctPulse 0.5s ease;
     }
     .answer-btn.correct .letter {
-      background: #2b8240;
+      background: var(--green);
       color: #fff;
-      border-right-color: transparent;
     }
 
     .answer-btn.wrong {
-      border-color: #ea4335 !important;
-      background: #ea4335 !important;
-      color: #fff !important;
+      border-color: var(--red-border) !important;
+      background: var(--red-bg) !important;
+      animation: wrongShake 0.5s ease;
     }
     .answer-btn.wrong .letter {
-      background: #b33328;
-      color: #fff;
-      border-right-color: transparent;
-    }
-    .answer-btn.disabled { pointer-events: none; opacity: 1; }
-
-    .answer-btn.selected-temp {
-      border-color: var(--primary) !important;
-      background: rgba(99,102,241,0.15) !important;
-    }
-    .answer-btn.selected-temp .letter {
-      background: var(--primary);
+      background: var(--red);
       color: #fff;
     }
-
-    /* Highlight correct answer when wrong is selected */
-    .answer-btn.correct-highlight {
-      border-color: #34a853 !important;
-      background: var(--surface) !important;
-    }
-    .answer-btn.correct-highlight .letter {
-      background: #34a853;
-      color: #fff;
-      border-right-color: transparent;
-    }
+    .answer-btn.disabled { pointer-events: none; opacity: 0.6; }
+    .answer-btn.correct.disabled { opacity: 1; }
 
     /* ========= NAVIGATION ========= */
     .nav-bar {
@@ -619,92 +579,16 @@
     .page-dot.answered { background: rgba(34,197,94,0.15); border-color: var(--green-border); color: var(--green); }
     .page-dot.wrong-dot { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
 
-    /* Quick slide animation for question change */
-    @keyframes slideLeft {
-      from { opacity: 0; transform: translateX(30px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-    .anim-slide { animation: slideLeft 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-
-    /* ========= TESTING MODE ========= */
-    body.testing-mode .header { display: none; }
-    body.testing-mode .tabs { display: none; }
-    body.testing-mode .download-bar { display: none !important; }
-    body.testing-mode .app { padding: 10px; padding-bottom: 20px; }
-
-    /* Floating Menu Button */
-    .fab-btn {
-      position: fixed;
-      top: 15px;
-      right: 15px;
-      width: 44px;
-      height: 44px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      cursor: pointer;
-      z-index: 100;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      color: var(--text);
-    }
-    body.testing-mode .fab-btn { display: flex; }
-
-    /* Modal */
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.6);
-      backdrop-filter: blur(5px);
-      z-index: 200;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .modal-content {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      width: 100%;
-      max-width: 500px;
-      padding: 24px;
-      animation: scaleIn 0.3s ease;
-    }
-
     @media (max-width: 600px) {
       .app { padding: 12px 10px 90px; }
-      body.testing-mode .app { padding: 10px; }
       .header h1 { font-size: 22px; }
-      .question-card { padding: 16px; }
+      .question-card { padding: 20px; }
       .q-text { font-size: 15px; }
       .stats-bar { gap: 6px; }
       .stat-card { padding: 10px 12px; }
       .stat-card .num { font-size: 20px; }
-      .search-input { width: 100px; }
+      .search-input { width: 140px; }
       .download-bar { flex-wrap: wrap; gap: 8px; }
-      .mode-bar { flex-wrap: wrap; gap: 6px; }
-      .mode-btn, label.mode-btn { 
-        padding: 8px 12px; 
-        font-size: 13px;
-        min-height: 44px;
-        display: inline-flex;
-        align-items: center;
-      }
-      .upload-zone { 
-        padding: 40px 20px;
-        min-height: 250px;
-      }
-      .upload-zone .icon { font-size: 52px; }
-      .upload-zone h3 { font-size: 20px; }
-      .nav-bar { flex-direction: column; gap: 12px; }
-      .nav-btn { min-height: 54px; font-size: 16px; width: 100%; justify-content: center; display: flex; align-items: center; }
-      .answer-btn { padding: 12px; font-size: 14px; min-height: 48px; border-radius: 10px; gap: 10px; border-width: 1.5px; }
-      .answer-btn .letter { width: 26px; height: 26px; font-size: 13px; border-radius: 6px; flex-shrink: 0; }
-      .q-move-btn { font-size: 11px; padding: 4px 8px; }
     }
   </style>
 </head>
@@ -713,70 +597,28 @@
 <div class="app" id="app">
   <!-- Header -->
   <div class="header">
-    <h1>&#x1F697; PDD Test Manager</h1>
-    <p>Yo'l harakati qoidalari &#8212; savollar bazasini boshqarish</p>
+    <h1>рџљ— PDD Test Manager</h1>
+    <p>Yo'l harakati qoidalari вЂ” savollar bazasini boshqarish</p>
   </div>
 
   <!-- Tabs -->
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('main')" id="tab-main">
-      &#x1F4CB; Asosiy <span class="badge" id="count-main">0</span>
+      рџ“‹ Asosiy <span class="badge" id="count-main">0</span>
     </button>
     <button class="tab-btn" onclick="switchTab('exc')" id="tab-exc">
-      &#x26A0;&#xFE0F; Istisnolar <span class="badge" id="count-exc">0</span>
+      вљ пёЏ Istisnolar <span class="badge" id="count-exc">0</span>
     </button>
-  </div>
-
-  <!-- Permanent Upload Button -->
-  <div id="upload-box" style="margin: 30px auto; max-width: 600px; padding: 15px; display: flex; flex-direction: column; gap: 10px;">
-    <!-- Asosiy: Yuklash + O'chirish -->
-    <div style="display:flex; gap:8px; align-items:stretch;">
-      <input type="file" id="perm-main" accept=".json" style="display:none" onchange="handleFile(this.files[0], 'main')">
-      <button class="upload-btn" onclick="document.getElementById('perm-main').click()" style="flex: 1; padding: 16px; font-size: 16px; border-radius: 14px;">
-        &#x1F4C1; Asosiyga Yuklash
-      </button>
-      <button class="upload-btn" onclick="clearSpecificState('main')" id="btn-del-main" style="padding: 16px 18px; font-size: 18px; border-radius: 14px; background: rgba(239,68,68,0.1); border-color: var(--red); color: var(--red); display:none;" title="Asosiy bazani o'chirish">
-        &#x1F5D1;
-      </button>
-    </div>
-    <!-- Istisno: Yuklash + O'chirish -->
-    <div style="display:flex; gap:8px; align-items:stretch;">
-      <input type="file" id="perm-exc" accept=".json" style="display:none" onchange="handleFile(this.files[0], 'exc')">
-      <button class="upload-btn" style="flex: 1; padding: 16px; font-size: 16px; border-radius: 14px; background: rgba(234,179,8,0.1); border-color: var(--yellow); color: var(--yellow);" onclick="document.getElementById('perm-exc').click()">
-        &#x26A0;&#xFE0F; Istisnoga Yuklash
-      </button>
-      <button class="upload-btn" onclick="clearSpecificState('exc')" id="btn-del-exc" style="padding: 16px 18px; font-size: 18px; border-radius: 14px; background: rgba(239,68,68,0.1); border-color: var(--red); color: var(--red); display:none;" title="Istisnolar bazasini o'chirish">
-        &#x1F5D1;
-      </button>
-    </div>
   </div>
 
   <!-- Content -->
   <div id="content"></div>
 </div>
 
-<!-- Floating Settings Button for testing mode -->
-<button class="fab-btn" onclick="openSettingsModal()">&#x2699;&#xFE0F;</button>
-
-<!-- Settings Modal -->
-<div id="settings-modal" class="modal-overlay" onclick="this.style.display='none'">
-  <div class="modal-content" onclick="event.stopPropagation()">
-    <div style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">&#x2699;&#xFE0F; Boshqaruv Paneli</div>
-    <div id="modal-body"></div>
-    <button class="nav-btn secondary" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('settings-modal').style.display='none'">Yopish</button>
-  </div>
-</div>
-
 <!-- Download Bar -->
-<div class="download-bar" id="download-bar" style="display:none; padding: 12px 15px; padding-bottom: calc(12px + env(safe-area-inset-bottom)); flex-wrap: wrap; gap: 8px;">
-  <div style="display:flex; gap:8px; flex:1; min-width:280px;" id="dl-grp-main">
-    <button class="dl-btn" onclick="downloadJSON('main')" id="dl-main" style="flex:1">&#x2B07; Asosiy yuklash</button>
-    <button class="dl-btn" onclick="clearSpecificState('main')" style="background:rgba(239,68,68,0.15); color:#ef4444; border:1.5px solid #ef4444; min-width:90px; font-weight:600;">&#x1F5D1; O'chirish</button>
-  </div>
-  <div style="display:flex; gap:8px; flex:1; min-width:280px;" id="dl-grp-exc">
-    <button class="dl-btn exc" onclick="downloadJSON('exc')" id="dl-exc" style="flex:1">&#x2B07; Istisno yuklash</button>
-    <button class="dl-btn" onclick="clearSpecificState('exc')" style="background:rgba(239,68,68,0.15); color:#ef4444; border:1.5px solid #ef4444; min-width:90px; font-weight:600;">&#x1F5D1; O'chirish</button>
-  </div>
+<div class="download-bar" id="download-bar" style="display:none">
+  <button class="dl-btn" onclick="downloadJSON('main')" id="dl-main">в¬‡ Asosiy bazani yuklab olish</button>
+  <button class="dl-btn exc" onclick="downloadJSON('exc')" id="dl-exc">в¬‡ Istisnolarni yuklab olish</button>
 </div>
 
 <script>
@@ -789,19 +631,10 @@ let state = {
   currentIndex: 0,
   answered: {},       // { questionId: { selected, correct } }
   searchTerm: '',
-  score: { correct: 0, wrong: 0 },
-  selectedAns: null,
-  testStarted: false
+  score: { correct: 0, wrong: 0 }
 };
 
 // ====== HELPERS ======
-function escapeHtml(str) {
-  if (!str) return '';
-  return String(str).replace(/[&<>"']/g, function(m) {
-    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[m];
-  });
-}
-
 function getCurrentQuestions() {
   return state.currentTab === 'main' ? state.mainQuestions : state.excQuestions;
 }
@@ -818,17 +651,8 @@ function updateCounts() {
   document.getElementById('count-exc').textContent = state.excQuestions.length;
   const dlBar = document.getElementById('download-bar');
   dlBar.style.display = (state.mainQuestions.length || state.excQuestions.length) ? 'flex' : 'none';
-  
-  const dlGrpMain = document.getElementById('dl-grp-main');
-  const dlGrpExc = document.getElementById('dl-grp-exc');
-  if(dlGrpMain) dlGrpMain.style.display = state.mainQuestions.length ? 'flex' : 'none';
-  if(dlGrpExc) dlGrpExc.style.display = state.excQuestions.length ? 'flex' : 'none';
-  
-  // Bosh sahifadagi o'chirish tugmalari
-  const btnDelMain = document.getElementById('btn-del-main');
-  const btnDelExc = document.getElementById('btn-del-exc');
-  if(btnDelMain) btnDelMain.style.display = state.mainQuestions.length ? 'inline-flex' : 'none';
-  if(btnDelExc) btnDelExc.style.display = state.excQuestions.length ? 'inline-flex' : 'none';
+  document.getElementById('dl-main').disabled = !state.mainQuestions.length;
+  document.getElementById('dl-exc').disabled = !state.excQuestions.length;
 }
 
 function showToast(msg, type='info') {
@@ -872,25 +696,9 @@ function loadState() {
 }
 
 function clearState() {
-    if(confirm('Barcha saqlangan malumotlarni va ozgarishlarni ochirib, boshidan boshlamoqchimisiz?')) {
+    if(confirm('Barcha saqlangan ma\\'lumotlarni va o\\'zgarishlarni o\\'chirib, boshidan boshlamoqchimisiz?')) {
         localStorage.removeItem('pdd_state');
         location.reload();
-    }
-}
-
-function clearSpecificState(tab) {
-    const tabName = tab === 'main' ? 'Asosiy baza' : 'Istisnolar bazasi';
-    if(confirm(`${tabName}dagi barcha savollarni o'chirib yubormoqchimisiz?`)) {
-        if (tab === 'main') state.mainQuestions = [];
-        else state.excQuestions = [];
-        
-        state.currentIndex = 0;
-        state.answered = {};
-        state.score = { correct: 0, wrong: 0 };
-        saveState();
-        updateCounts();
-        render();
-        showToast(`${tabName} muvaffaqiyatli tozalandi!`, 'success');
     }
 }
 // ====== TAB SWITCHING =======
@@ -900,45 +708,61 @@ function switchTab(tab) {
   state.answered = {};
   state.score = { correct: 0, wrong: 0 };
   state.searchTerm = '';
-  state.selectedAns = null;
-  state.testStarted = false;
   document.getElementById('tab-main').classList.toggle('active', tab==='main');
   document.getElementById('tab-exc').classList.toggle('active', tab==='exc');
   render();
 }
 
 // ====== FILE LOADING ======
-function handleFile(file, targetTab = null) {
+function handleFile(file) {
   const reader = new FileReader();
   reader.onload = (e) => {
     try {
       let data = JSON.parse(e.target.result);
+
+      // NEW FORMAT: { uzb: [...], kril: [...], rus: [...] }
+      if (data && !Array.isArray(data) && (data.uzb || data.kril || data.rus)) {
+        // Har bir tilni bitta arrayga normalize qilib qo'shamiz
+        const allLangs = ['uzb', 'kril', 'rus'];
+        let combined = [];
+        for (const lang of allLangs) {
+          if (data[lang] && Array.isArray(data[lang])) {
+            combined = data[lang].map((q, i) => normalizeQuestion(q, i));
+            break; // birinchi mavjud tilni yuklaymiz
+          }
+        }
+        if (!combined.length) {
+          showToast('JSON formatida savollar topilmadi!', 'warn');
+          return;
+        }
+        if (state.currentTab === 'main') state.mainQuestions = combined;
+        else state.excQuestions = combined;
+        state.currentIndex = 0;
+        state.answered = {};
+        state.score = { correct: 0, wrong: 0 };
+        // rawData ni saqlaymiz til almashtirish uchun
+        window._rawNewFormat = data;
+        updateCounts();
+        showToast(`${combined.length} ta savol yuklandi!`, 'success');
+        render();
+        return;
+      }
+
+      // OLD FORMAT: array
       if (!Array.isArray(data)) {
         showToast('JSON massiv formatida bo\'lishi kerak!', 'warn');
         return;
       }
       // Normalize: support both ptest format and raw format
       data = data.map((q, i) => normalizeQuestion(q, i));
-      
-      const tabToUse = targetTab || state.currentTab;
-      if (tabToUse === 'main') state.mainQuestions = data;
+      if (state.currentTab === 'main') state.mainQuestions = data;
       else state.excQuestions = data;
-      
-      state.currentTab = tabToUse;
       state.currentIndex = 0;
       state.answered = {};
       state.score = { correct: 0, wrong: 0 };
-      state.selectedAns = null;
-      state.testStarted = false;
-      
-      document.getElementById('tab-main').classList.toggle('active', tabToUse === 'main');
-      document.getElementById('tab-exc').classList.toggle('active', tabToUse === 'exc');
-      
+      window._rawNewFormat = null;
       updateCounts();
-      saveState(); // Autostate save after loading file
-      
-      const tabName = tabToUse === 'main' ? 'Asosiyga' : 'Istisnolarga';
-      showToast(`${data.length} ta savol ${tabName} yuklandi!`, 'success');
+      showToast(`${data.length} ta savol yuklandi!`, 'success');
       render();
     } catch(err) {
       showToast('JSON o\'qishda xatolik: ' + err.message, 'warn');
@@ -996,24 +820,13 @@ function moveQuestion(qId) {
   const dst = state.currentTab === 'main' ? state.excQuestions : state.mainQuestions;
   const idx = src.findIndex(q => q.id === qId);
   if (idx === -1) return;
-  
   const [q] = src.splice(idx, 1);
-  
-  // Anti-Duplicate Shield
-  if (!dst.some(existing => existing.id === q.id)) {
-    dst.push(q);
-  } else {
-    showToast(`Bu savol allaqachon u yerda bor edi! Qayta qo'shilmadi.`, 'info');
-  }
-
+  dst.push(q);
   if (state.currentIndex >= src.length && src.length > 0) state.currentIndex = src.length - 1;
   if (src.length === 0) state.currentIndex = 0;
-  
   updateCounts();
-  saveState(); // Save after moving
-  
   const target = state.currentTab === 'main' ? 'Istisnolar' : 'Asosiy';
-  showToast(`Savol #${q.id} &#x2192; ${target}ga ko'chirildi`, 'success');
+  showToast(`Savol #${q.id} в†’ ${target}ga ko'chirildi`, 'success');
   render();
 }
 
@@ -1049,74 +862,38 @@ function downloadJSON(which) {
 }
 
 // ====== ANSWER HANDLING ======
-function setAndPreserveScroll(action) {
-  const scrollPos = window.scrollY;
-  action();
-  window.scrollTo({ top: scrollPos, behavior: 'instant' });
-}
-
 function selectAnswer(qId, ansIdx) {
   if (state.answered[qId]) return;
   const questions = getCurrentQuestions();
   const q = questions.find(x => x.id === qId);
   if (!q) return;
-  
   const isCorrect = q.answers[ansIdx].correct;
   state.answered[qId] = { selected: ansIdx, correct: isCorrect };
-  
   if (isCorrect) state.score.correct++;
   else state.score.wrong++;
-  
-  const btns = document.querySelectorAll('.answer-btn');
-  const correctIdx = q.answers.findIndex(a => a.correct);
-
-  btns.forEach((btn, i) => {
-    btn.classList.add('disabled');
-    if (i === correctIdx) btn.classList.add('correct');
-    else if (i === ansIdx && !isCorrect) btn.classList.add('wrong');
-  });
-
-  // Save progress!
-  saveState();
-
-  const nextBtn = document.getElementById('next-btn-nav');
-  if (nextBtn) {
-    nextBtn.style.background = '#34a853';
-    nextBtn.style.color = 'white';
-    nextBtn.disabled = false;
-  }
-
-  // Avtomatik o'tish (0.6 sekund)
-  setTimeout(() => {
-    if (state.currentIndex === questions.indexOf(q)) {
-      nextQuestion();
-    }
-  }, 600);
+  renderQuestion();
 }
 
 function nextQuestion() {
-  state.selectedAns = null;
   const questions = getCurrentQuestions();
   if (state.currentIndex < questions.length - 1) {
     state.currentIndex++;
-    setAndPreserveScroll(() => renderQuestion(true));
+    renderQuestion();
   } else {
     showResults();
   }
 }
 
 function prevQuestion() {
-  state.selectedAns = null;
   if (state.currentIndex > 0) {
     state.currentIndex--;
-    setAndPreserveScroll(() => renderQuestion(true));
+    renderQuestion();
   }
 }
 
 function goToQuestion(idx) {
-  state.selectedAns = null;
   state.currentIndex = idx;
-  setAndPreserveScroll(() => renderQuestion(true));
+  renderQuestion();
 }
 
 // ====== RESULTS ======
@@ -1124,7 +901,7 @@ function showResults() {
   const total = Object.keys(state.answered).length;
   if (!total) return;
   const pct = Math.round((state.score.correct / total) * 100);
-  const emoji = pct >= 80 ? '&#x1F389;' : pct >= 50 ? '&#x1F44D;' : '&#x1F4AA;';
+  const emoji = pct >= 80 ? 'рџЋ‰' : pct >= 50 ? 'рџЉ' : 'рџ”';
   const msg = pct >= 80 ? 'Ajoyib natija!' : pct >= 50 ? 'Yomon emas!' : 'Ko\'proq mashq qiling!';
 
   const overlay = document.createElement('div');
@@ -1136,7 +913,7 @@ function showResults() {
       <p>${msg}</p>
       <div class="score">${pct}%<span> (${state.score.correct}/${total})</span></div>
       <div style="margin-top:8px; font-size:14px; color:var(--text2)">
-        &#x2705; To'g'ri: ${state.score.correct} &nbsp; &#x274C; Xato: ${state.score.wrong}
+        вњ… To'g'ri: ${state.score.correct} &nbsp; вќЊ Xato: ${state.score.wrong}
       </div>
       <button class="nav-btn" style="margin-top:24px; width:100%" onclick="this.closest('.result-overlay').remove()">Yopish</button>
     </div>
@@ -1146,138 +923,34 @@ function showResults() {
 
 // ====== RENDERING ======
 function render() {
-  try {
-    const questions = getCurrentQuestions();
-    const container = document.getElementById('content');
-    const uploadBox = document.getElementById('upload-box');
-    
-    if (uploadBox) {
-      if (questions.length > 0) {
-        uploadBox.style.display = 'none';
-      } else {
-        uploadBox.style.display = 'block';
-      }
-    }
-
-    if (!questions.length) {
-      container.innerHTML = '';
-      updateCounts();
-      return;
-    }
-
-    if (state.mode === 'list') {
-      document.body.classList.remove('testing-mode');
-      renderList();
-    } else {
-      if (!state.testStarted) {
-        renderStartControl();
-      } else {
-        renderQuestion(false);
-      }
-    }
-  } catch (err) {
-    console.error("Render error:", err);
-    showToast("Ekranga chiqarishda xatolik yuz berdi: " + err.message, "warn");
-  }
-}
-
-function startTestMode() {
-  state.testStarted = true;
-  document.body.classList.add('testing-mode');
-  renderQuestion(true);
-}
-
-function exitTestMode() {
-  state.testStarted = false;
-  document.body.classList.remove('testing-mode');
-  render();
-}
-
-function openSettingsModal() {
-  const questions = getCurrentQuestions();
-  let modalBody = document.getElementById('modal-body');
-  modalBody.innerHTML = `
-    <!-- Stats -->
-    <div class="stats-bar" style="margin-bottom: 20px;">
-      <div class="stat-card"><div class="num">${questions.length}</div><div class="label">Jami</div></div>
-      <div class="stat-card"><div class="num" style="color:var(--yellow)">${state.excQuestions.length}</div><div class="label">Istisnolarda</div></div>
-      <div class="stat-card"><div class="num" style="color:var(--green)">${state.score.correct}</div><div class="label">To'g'ri</div></div>
-      <div class="stat-card"><div class="num" style="color:var(--red)">${state.score.wrong}</div><div class="label">Xato</div></div>
-    </div>
-    
-    <!-- Mode Bar -->
-    <div class="mode-bar" style="margin-bottom: 20px; flex-direction: column; align-items: stretch;">
-      <button class="mode-btn" style="background:var(--green); color:white; border:none; padding:15px; font-size:16px; font-weight:bold; border-radius:12px; margin-bottom:10px;" onclick="saveState(); state.testStarted = false; document.getElementById('settings-modal').style.display='none'; document.body.classList.remove('testing-mode'); showToast('Barcha testlar ayni ajratilgan holatida xavfsiz saqlandi!', 'success'); render();">
-        &#x1F4BE; Saqlash va Bosh Ekranga Qaytish
-      </button>
-      <div style="display:flex; gap:10px;">
-        <label class="mode-btn" style="cursor:pointer; text-align:center; flex:1;">&#x1F4C1; Asosiyga yuklash
-          <input type="file" accept=".json" style="display:none" onchange="document.getElementById('settings-modal').style.display='none'; handleFile(this.files[0], 'main');">
-        </label>
-        <label class="mode-btn" style="cursor:pointer; text-align:center; flex:1; background:rgba(234,179,8,0.1); border-color:var(--yellow); color:var(--yellow);">&#x26A0;&#xFE0F; Istisnoga yuklash
-          <input type="file" accept=".json" style="display:none" onchange="document.getElementById('settings-modal').style.display='none'; handleFile(this.files[0], 'exc');">
-        </label>
-      </div>
-      <button class="mode-btn" style="background:rgba(239,68,68,0.1); border-color:var(--red); color:var(--red); margin-top:10px; width:100%;" onclick="clearState()">
-        &#x1F5D1; Barcha yuklangan bazalarni o'chirish (Tozalash)
-      </button>
-    </div>
-  `;
-  document.getElementById('settings-modal').style.display = 'flex';
-}
-
-function renderStartControl() {
   const questions = getCurrentQuestions();
   const container = document.getElementById('content');
-  document.body.classList.remove('testing-mode');
-  updateCounts();
-  
-  container.innerHTML = `
-    <!-- Stats -->
-    <div class="stats-bar" style="margin-bottom: 20px;">
-      <div class="stat-card"><div class="num">${questions.length}</div><div class="label">Jami savollar</div></div>
-      <div class="stat-card"><div class="num" style="color:var(--green)">${state.score.correct}</div><div class="label">To'g'ri</div></div>
-      <div class="stat-card"><div class="num" style="color:var(--red)">${state.score.wrong}</div><div class="label">Xato</div></div>
-      <div class="stat-card"><div class="num">${Object.keys(state.answered).length}</div><div class="label">Javob berilgan</div></div>
-    </div>
 
-    <!-- Mode Bar -->
-    <div class="mode-bar">
-      <button class="mode-btn active" onclick="state.mode='test'; render()">&#x1F9EA; Test</button>
-      <button class="mode-btn" onclick="state.mode='list'; render()">&#x1F4C3; Ro'yxat</button>
-      <div class="spacer"></div>
-      <label class="mode-btn" style="cursor:pointer">&#x1F4C1; Boshqa fayl yuklash (joriy bo'limga)
-        <input type="file" accept=".json" style="display:none" onchange="handleFile(this.files[0], state.currentTab)">
-      </label>
-    </div>
-    
-    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 40px 20px; text-align: center; margin-top: 20px; animation: scaleIn 0.5s ease;">
-      <div style="font-size: 60px; margin-bottom: 20px;">&#x1F680;</div>
-      <h2 style="margin-bottom: 15px; font-size: 24px;">Testga tayyormisiz?</h2>
-      <p style="color: var(--text2); margin-bottom: 30px; font-size: 15px; line-height: 1.6; max-width: 500px; margin-left: auto; margin-right: auto;">Test qulay va ravon ishlashi uchun to'liq ekranli tizim yoqiladi. Barcha xalaqit beruvchi elementlar bekitiladi.</p>
-      <button class="nav-btn" onclick="startTestMode()" style="width: 100%; max-width: 350px; font-size: 18px; padding: 18px; border-radius: 14px; background: linear-gradient(135deg, var(--primary), var(--accent)); display: inline-block;">
-        Testni Boshlash &#x25B6;&#xFE0F;
-      </button>
-    </div>
-  `;
+  if (!questions.length) {
+    container.innerHTML = renderUploadZone();
+    updateCounts();
+    return;
+  }
+
+  if (state.mode === 'list') renderList();
+  else renderQuestion();
 }
 
 function renderUploadZone() {
   return `
-    <div class="upload-zone" id="upload-zone">
-      <div class="icon">&#x1F4C2;</div>
+    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()"
+         ondragover="event.preventDefault(); this.classList.add('drag-over')"
+         ondragleave="this.classList.remove('drag-over')"
+         ondrop="event.preventDefault(); this.classList.remove('drag-over'); handleFile(event.dataTransfer.files[0])">
+      <div class="icon">рџ“Ѓ</div>
       <h3>JSON faylni yuklang</h3>
-      <p>Quyidagi tugmani bosing</p>
-      <input type="file" id="file-input" accept=".json"
-             style="display:none" onchange="handleFile(this.files[0])">
-      <button class="upload-btn" onclick="document.getElementById('file-input').click()">
-        &#x1F4C1; Fayl tanlash
-      </button>
+      <p>Fayl tanlash uchun bosing yoki shu yerga tashlang</p>
+      <input type="file" id="file-input" accept=".json" onchange="handleFile(this.files[0])">
     </div>
   `;
 }
 
-function renderQuestion(animate = false) {
+function renderQuestion() {
   const questions = getCurrentQuestions();
   if (!questions.length) return render();
   const q = questions[state.currentIndex];
@@ -1287,25 +960,49 @@ function renderQuestion(animate = false) {
   const letters = ['A','B','C','D','E'];
 
   const container = document.getElementById('content');
-  const animClass = animate ? 'anim-slide' : '';
   container.innerHTML = `
-    <!-- Top Progress Line -->
-    <div class="progress-bar" style="margin-bottom: 20px;">
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="stat-card"><div class="num">${questions.length}</div><div class="label">Jami savollar</div></div>
+      <div class="stat-card"><div class="num" style="color:var(--green)">${state.score.correct}</div><div class="label">To'g'ri</div></div>
+      <div class="stat-card"><div class="num" style="color:var(--red)">${state.score.wrong}</div><div class="label">Xato</div></div>
+      <div class="stat-card"><div class="num">${Object.keys(state.answered).length}</div><div class="label">Javob berilgan</div></div>
+    </div>
+
+    <!-- Mode Bar -->
+    <div class="mode-bar">
+      <button class="mode-btn ${state.mode==='test'?'active':''}" onclick="state.mode='test'; render()">рџ§Є Test</button>
+      <button class="mode-btn ${state.mode==='list'?'active':''}" onclick="state.mode='list'; render()">рџ“ѓ Ro'yxat</button>
+      <div class="spacer"></div>
+      <button class="mode-btn" onclick="document.getElementById('file-input2').click()">рџ“Ѓ Fayl yuklash</button>
+      <input type="file" id="file-input2" accept=".json" style="display:none" onchange="handleFile(this.files[0])">
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-bar">
       <div class="progress-fill" style="width:${((state.currentIndex+1)/questions.length*100)}%"></div>
     </div>
 
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-      <button class="q-move-btn" style="padding: 10px 16px; font-size: 13px; font-weight: bold; border-radius: 10px; background: rgba(234,179,8,0.1); border-color: var(--yellow);" onclick="moveQuestion(${q.id})">
-        &#x2197; ${otherTab}ga ko'chirish
-      </button>
-      <div style="text-align:right;">
-         <span class="q-number" style="font-size:14px; padding:6px 14px; display:inline-block; margin-bottom:6px;">Savol ${state.currentIndex+1} / ${questions.length}</span><br>
-         <span class="q-bilet">Bilet #${q.bilet_id} &#x2022; ID: ${q.id}</span>
-      </div>
+    <!-- Pagination dots -->
+    <div class="pagination">
+      ${questions.slice(Math.max(0, state.currentIndex-10), Math.min(questions.length, state.currentIndex+11)).map((pq, i) => {
+        const realIdx = Math.max(0, state.currentIndex-10) + i;
+        const a = state.answered[pq.id];
+        let cls = realIdx === state.currentIndex ? 'current' : '';
+        if (a && a.correct) cls += ' answered';
+        if (a && !a.correct) cls += ' wrong-dot';
+        return `<button class="page-dot ${cls}" onclick="goToQuestion(${realIdx})">${realIdx+1}</button>`;
+      }).join('')}
     </div>
 
     <!-- Question Card -->
-    <div class="question-card ${animClass}" key="${q.id}">
+    <div class="question-card" key="${q.id}">
+      <div class="q-header">
+        <span class="q-number">Savol ${state.currentIndex+1} / ${questions.length}</span>
+        <span class="q-bilet">Bilet #${q.bilet_id} вЂў ID: ${q.id}</span>
+        <button class="q-move-btn" onclick="moveQuestion(${q.id})">в†— ${otherTab} ko'chirish</button>
+      </div>
+
       <div class="q-text">${escapeHtml(q.savol)}</div>
 
       ${q.rasm ? `<img class="q-image" src="${q.rasm}" alt="Rasm" onerror="this.style.display='none'" loading="lazy">` : ''}
@@ -1316,8 +1013,6 @@ function renderQuestion(animate = false) {
           if (ans) {
             if (i === correctIdx) cls = 'correct';
             else if (i === ans.selected && !ans.correct) cls = 'wrong';
-            // User selected wrong, auto-highlight the right one
-            else if (!ans.correct && i === correctIdx) cls = 'correct-highlight';
             else cls = 'disabled';
           }
           return `<button class="answer-btn ${cls}" onclick="selectAnswer(${q.id}, ${i})">
@@ -1327,13 +1022,21 @@ function renderQuestion(animate = false) {
         }).join('')}
       </div>
 
-      <!-- Action Bar (Move & Nav) directly below answers -->
-      <div class="nav-bar" style="margin-top: 16px; align-items: stretch; justify-content: stretch; display: flex; gap: 10px;">
-        <button id="next-btn-nav" class="nav-btn" style="flex: 1; ${ans ? 'background: #34a853; color: white;' : ''}" onclick="nextQuestion()" ${!ans ? 'disabled' : ''}>
-          ${state.currentIndex < questions.length-1 ? 'Keyingi &#x2192;' : '&#x1F3C1; Yakunlash'}
-        </button>
-        <button class="nav-btn secondary" style="flex: 1;" onclick="prevQuestion()" ${state.currentIndex===0?'disabled':''}>&#x2190; Oldingi</button>
-      </div>
+      ${ans ? `
+      <div style="margin-top:16px; padding:12px 16px; border-radius:10px; font-size:14px; font-weight:600;
+        background: ${ans.correct ? 'var(--green-bg)' : 'var(--red-bg)'};
+        border: 1px solid ${ans.correct ? 'var(--green-border)' : 'var(--red-border)'};
+        color: ${ans.correct ? 'var(--green)' : 'var(--red)'}">
+        ${ans.correct ? 'вњ… To\'g\'ri javob!' : `вќЊ Xato! To'g'ri javob: ${letters[correctIdx]}. ${escapeHtml(q.answers[correctIdx].text)}`}
+      </div>` : ''}
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-bar">
+      <button class="nav-btn secondary" onclick="prevQuestion()" ${state.currentIndex===0?'disabled':''}>в†ђ Oldingi</button>
+      <button class="nav-btn" onclick="nextQuestion()">
+        ${state.currentIndex < questions.length-1 ? 'Keyingi в†’' : 'рџЏЃ Yakunlash'}
+      </button>
     </div>
   `;
 }
@@ -1343,7 +1046,7 @@ function renderList() {
   const filtered = state.searchTerm
     ? questions.filter(q => (q.savol + q.savol_rus).toLowerCase().includes(state.searchTerm.toLowerCase()))
     : questions;
-  const otherTab = state.currentTab === 'main' ? 'Istisnolarga' : 'Asosiyga';
+  const otherTab = state.currentTab === 'main' ? 'Istisnolarga в†’' : 'в†ђ Asosiyga';
 
   const container = document.getElementById('content');
   container.innerHTML = `
@@ -1354,14 +1057,13 @@ function renderList() {
     </div>
 
     <div class="mode-bar">
-      <button class="mode-btn ${state.mode==='test'?'active':''}" onclick="state.mode='test'; render()">&#x1F9EA; Test</button>
-      <button class="mode-btn ${state.mode==='list'?'active':''}" onclick="state.mode='list'; render()">&#x1F4C3; Ro'yxat</button>
+      <button class="mode-btn ${state.mode==='test'?'active':''}" onclick="state.mode='test'; render()">рџ§Є Test</button>
+      <button class="mode-btn ${state.mode==='list'?'active':''}" onclick="state.mode='list'; render()">рџ“ѓ Ro'yxat</button>
       <div class="spacer"></div>
-      <input class="search-input" type="text" placeholder="&#x1F50D; Qidirish..." value="${state.searchTerm}"
+      <input class="search-input" type="text" placeholder="рџ”Ќ Qidirish..." value="${state.searchTerm}"
              oninput="state.searchTerm=this.value; renderList()">
-      <label class="mode-btn" for="file-input3" style="cursor:pointer">&#x1F4C1; Fayl
-        <input type="file" id="file-input3" accept=".json" style="display:none" onchange="handleFile(this.files[0])">
-      </label>
+      <button class="mode-btn" onclick="document.getElementById('file-input3').click()">рџ“Ѓ Fayl</button>
+      <input type="file" id="file-input3" accept=".json" style="display:none" onchange="handleFile(this.files[0])">
     </div>
 
     ${filtered.length ? `
@@ -1375,7 +1077,7 @@ function renderList() {
       `).join('')}
     </div>` : `
     <div class="empty-state">
-      <div class="icon">&#x1F50D;</div>
+      <div class="icon">рџ”Ќ</div>
       <h3>Hech narsa topilmadi</h3>
       <p>Qidiruv so'zini o'zgartiring</p>
     </div>`}
@@ -1389,11 +1091,26 @@ function escapeHtml(str) {
 
 
 // ====== INIT ======
-// Script <body> oxirida, DOM tayyor
-if(loadState()) {
-  updateCounts();
+if (!loadState()) {
+  const params = new URLSearchParams(location.search);
+  if (params.get('file')) {
+    fetch(params.get('file'))
+      .then(r => r.json())
+      .then(data => {
+        data = data.map((q, i) => normalizeQuestion(q, i));
+        state.mainQuestions = data;
+        updateCounts();
+        saveState();
+        render();
+        showToast(${data.length} ta savol avtomatik yuklandi!, 'success');
+      })
+      .catch(() => {});
+  }
+} else {
+    updateCounts();
+    render();
+    showToast('Oldingi sessiya tiklandi!', 'success');
 }
-render();
 </script>
 </body>
 </html>
