@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Solishtirish</title></head>
+<body><pre id="out">Yuklanmoqda...</pre>
+<script>
+async function run() {
+  const files = {
+    uzb: '/ajratilgan/prava__uzb_max.txt',
+    kril: '/ajratilgan/prava__kril_max.txt', 
+    rus: '/ajratilgan/prava__rus_max.txt'
+  };
+  
+  function parseQuestions(text) {
+    const blocks = text.split(/\n\n+/).filter(b => b.trim());
+    const questions = [];
+    for (const block of blocks) {
+      const lines = block.trim().split('\n').filter(l => l.trim());
+      const qLine = lines.find(l => l.startsWith('#'));
+      if (!qLine) continue;
+      const options = lines.filter(l => l.startsWith('+') || l.startsWith('-'));
+      const correctIndex = options.findIndex(l => l.startsWith('+'));
+      questions.push({
+        text: qLine.replace(/^#\s*/, '').trim(),
+        totalOptions: options.length,
+        correctIndex,
+        fingerprint: options.length + '_' + correctIndex
+      });
+    }
+    return questions;
+  }
+
+  // Load files from local filesystem using FileReader
+  const out = document.getElementById('out');
+  out.textContent = 'Fayllarni tanlang...\\n\\nQuyidagi tugmalarni bosing:\\n';
+  
+  // Since we can't fetch local files, parse from embedded data
+  // Let me use a different approach - input files
+}
+
+// Actually, let's just use file inputs
+document.getElementById('out').innerHTML = `
+<h2>PDD Savollar Solishtiruvi</h2>
+<p>3 ta MAX faylni tanlang (uzb, kril, rus):</p>
+<input type="file" id="fileInput" multiple accept=".txt">
+<button onclick="analyze()">SOLISHTIR</button>
+<div id="results"></div>
+`;
+
+function analyze() {
+  const input = document.getElementById('fileInput');
+  if (input.files.length < 3) { alert('3 ta fayl tanlang!'); return; }
+  
+  const readers = [];
+  for (let i = 0; i < input.files.length; i++) {
+    readers.push(new Promise(resolve => {
+      const r = new FileReader();
+      r.onload = () => resolve({ name: input.files[i].name, text: r.result });
+      r.readAsText(input.files[i]);
+    }));
+  }
+  
+  Promise.all(readers).then(files => {
+    function parseQ(text) {
+      const blocks = text.split(/\n\n+/).filter(b => b.trim());
+      const qs = [];
+      for (const block of blocks) {
+        const lines = block.trim().split('\\n').filter(l => l.trim());
+        const qLine = lines.find(l => l.startsWith('#'));
+        if (!qLine) continue;
+        const opts = lines.filter(l => l.startsWith('+') || l.startsWith('-'));
+        const ci = opts.findIndex(l => l.startsWith('+'));
+        qs.push({ text: qLine.replace(/^#\\s*/, ''), opts: opts.length, ci, fp: opts.length+'_'+ci });
+      }
+      return qs;
+    }
+    
+    let html = '<h3>Natijalar</h3>';
+    const parsed = files.map(f => ({ name: f.name, qs: parseQ(f.text) }));
+    
+    for (const p of parsed) {
+      html += `<b>${p.name}</b>: ${p.qs.length} ta savol<br>`;
+    }
+    
+    // Compare each pair
+    for (let i = 0; i < parsed.length; i++) {
+      for (let j = i+1; j < parsed.length; j++) {
+        const a = parsed[i], b = parsed[j];
+        html += `<hr><h4>${a.name} vs ${b.name}</h4>`;
+        const min = Math.min(a.qs.length, b.qs.length);
+        let match = 0, diff = 0;
+        let diffs = [];
+        for (let k = 0; k < min; k++) {
+          if (a.qs[k].fp === b.qs[k].fp) match++;
+          else { diff++; diffs.push(k); }
+        }
+        const extra = Math.abs(a.qs.length - b.qs.length);
+        html += `Mos: <b>${match}</b> ta | Farqli: <b>${diff}</b> ta | Qo'shimcha: <b>${extra}</b> ta<br>`;
+        if (diffs.length > 0) {
+          html += '<table border=1><tr><th>#</th><th>'+a.name+'</th><th>'+b.name+'</th></tr>';
+          for (const d of diffs.slice(0, 20)) {
+            html += `<tr><td>${d+1}</td><td>${a.qs[d].opts}v/${a.qs[d].ci+1}t: ${a.qs[d].text.substring(0,80)}</td><td>${b.qs[d].opts}v/${b.qs[d].ci+1}t: ${b.qs[d].text.substring(0,80)}</td></tr>`;
+          }
+          html += '</table>';
+        }
+      }
+    }
+    document.getElementById('results').innerHTML = html;
+  });
+}
+</script></body></html>

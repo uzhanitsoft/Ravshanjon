@@ -579,6 +579,33 @@
     .page-dot.answered { background: rgba(34,197,94,0.15); border-color: var(--green-border); color: var(--green); }
     .page-dot.wrong-dot { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
 
+    /* ========= LANGUAGE SWITCHER ========= */
+    .lang-bar {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .lang-btn {
+      padding: 8px 20px;
+      border: 1.5px solid var(--border);
+      background: var(--surface2);
+      color: var(--text2);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .lang-btn:hover { border-color: var(--border-hover); color: var(--text); }
+    .lang-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 4px 16px var(--primary-glow);
+    }
+
     @media (max-width: 600px) {
       .app { padding: 12px 10px 90px; }
       .header h1 { font-size: 22px; }
@@ -599,6 +626,13 @@
   <div class="header">
     <h1>рџљ— PDD Test Manager</h1>
     <p>Yo'l harakati qoidalari вЂ” savollar bazasini boshqarish</p>
+  </div>
+
+  <!-- Language Switcher -->
+  <div class="lang-bar" id="lang-bar">
+    <button class="lang-btn active" onclick="switchLang('uzb')" id="lang-uzb">🇺🇿 O'zbek</button>
+    <button class="lang-btn" onclick="switchLang('kril')" id="lang-kril">Ўз Кирилл</button>
+    <button class="lang-btn" onclick="switchLang('rus')" id="lang-rus">🇷🇺 Русский</button>
   </div>
 
   <!-- Tabs -->
@@ -627,12 +661,40 @@ let state = {
   mainQuestions: [],
   excQuestions: [],
   currentTab: 'main',
+  currentLang: localStorage.getItem('pdd_lang') || 'uzb',  // uzb | kril | rus
   mode: 'test',      // 'test' or 'list'
   currentIndex: 0,
   answered: {},       // { questionId: { selected, correct } }
   searchTerm: '',
   score: { correct: 0, wrong: 0 }
 };
+
+// ====== LANGUAGE SWITCHING ======
+function switchLang(lang) {
+  state.currentLang = lang;
+  localStorage.setItem('pdd_lang', lang);
+  // Update buttons
+  document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById('lang-' + lang)?.classList.add('active');
+  // Reload from raw data if available
+  if (window._rawNewFormat) {
+    const questions = window._rawNewFormat[lang] || window._rawNewFormat.uzb || [];
+    const normalized = questions.map((q, i) => normalizeQuestion(q, i));
+    if (state.currentTab === 'main') state.mainQuestions = normalized;
+    else state.excQuestions = normalized;
+    state.currentIndex = 0;
+    state.answered = {};
+    state.score = { correct: 0, wrong: 0 };
+    updateCounts();
+    showToast(`${lang.toUpperCase()}: ${normalized.length} ta savol yuklandi!`, 'success');
+    render();
+  }
+}
+
+function initLangButtons() {
+  document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById('lang-' + state.currentLang)?.classList.add('active');
+}
 
 // ====== HELPERS ======
 function getCurrentQuestions() {
@@ -722,14 +784,12 @@ function handleFile(file) {
 
       // NEW FORMAT: { uzb: [...], kril: [...], rus: [...] }
       if (data && !Array.isArray(data) && (data.uzb || data.kril || data.rus)) {
-        // Har bir tilni bitta arrayga normalize qilib qo'shamiz
-        const allLangs = ['uzb', 'kril', 'rus'];
+        // Tanlangan tilga qarab savollarni yuklaymiz
+        const langKey = state.currentLang || 'uzb';
         let combined = [];
-        for (const lang of allLangs) {
-          if (data[lang] && Array.isArray(data[lang])) {
-            combined = data[lang].map((q, i) => normalizeQuestion(q, i));
-            break; // birinchi mavjud tilni yuklaymiz
-          }
+        const langData = data[langKey] || data.uzb || data.kril || data.rus;
+        if (langData && Array.isArray(langData)) {
+          combined = langData.map((q, i) => normalizeQuestion(q, i));
         }
         if (!combined.length) {
           showToast('JSON formatida savollar topilmadi!', 'warn');
@@ -1091,6 +1151,7 @@ function escapeHtml(str) {
 
 
 // ====== INIT ======
+initLangButtons();
 if (!loadState()) {
   const params = new URLSearchParams(location.search);
   if (params.get('file')) {
@@ -1102,11 +1163,12 @@ if (!loadState()) {
         updateCounts();
         saveState();
         render();
-        showToast(${data.length} ta savol avtomatik yuklandi!, 'success');
+        showToast(`${data.length} ta savol avtomatik yuklandi!`, 'success');
       })
       .catch(() => {});
   }
 } else {
+    initLangButtons();
     updateCounts();
     render();
     showToast('Oldingi sessiya tiklandi!', 'success');

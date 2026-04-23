@@ -5,12 +5,62 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ====== JSON Body Parser ======
+app.use(express.json({ limit: '10mb' }));
+
+// ====== PROGRESS STORAGE (file-based) ======
+const PROGRESS_DIR = path.join(__dirname, 'data', 'progress');
+if (!fs.existsSync(PROGRESS_DIR)) {
+  fs.mkdirSync(PROGRESS_DIR, { recursive: true });
+}
+
+// Save progress
+app.post('/api/progress/:userId', (req, res) => {
+  try {
+    const { userId } = req.params;
+    const safeId = userId.replace(/[^a-zA-Z0-9_-]/g, '');
+    if (!safeId) return res.status(400).json({ error: 'Invalid userId' });
+
+    const data = {
+      ...req.body,
+      updatedAt: Date.now()
+    };
+    
+    const filePath = path.join(PROGRESS_DIR, `${safeId}.json`);
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+    
+    res.json({ success: true, updatedAt: data.updatedAt });
+  } catch (err) {
+    console.error('Save progress error:', err);
+    res.status(500).json({ error: 'Failed to save progress' });
+  }
+});
+
+// Load progress
+app.get('/api/progress/:userId', (req, res) => {
+  try {
+    const { userId } = req.params;
+    const safeId = userId.replace(/[^a-zA-Z0-9_-]/g, '');
+    if (!safeId) return res.status(400).json({ error: 'Invalid userId' });
+
+    const filePath = path.join(PROGRESS_DIR, `${safeId}.json`);
+    if (!fs.existsSync(filePath)) {
+      return res.json({ exists: false });
+    }
+
+    const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    res.json({ exists: true, data });
+  } catch (err) {
+    console.error('Load progress error:', err);
+    res.status(500).json({ error: 'Failed to load progress' });
+  }
+});
+
 // ====== AUTO-EXTRACT IMAGES FROM ZIP ======
 function extractImagesIfNeeded() {
   const imagesDir = path.join(__dirname, 'public', 'images');
   const zipPath = path.join(__dirname, 'public', 'images.zip');
 
-  // Agar images papkasi yo'q yoki bo'sh bo'lsa — ZIP dan ochish
   if (!fs.existsSync(imagesDir) || fs.readdirSync(imagesDir).length === 0) {
     if (fs.existsSync(zipPath)) {
       console.log('📦 Rasmlarni images.zip dan ochish...');
@@ -37,7 +87,6 @@ extractImagesIfNeeded();
 app.use(express.static(path.join(__dirname, 'public'), {
   setHeaders: (res, filePath) => {
     if (filePath.endsWith('.html')) {
-      // HTML hech qachon keshlanmasin
       res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
     }

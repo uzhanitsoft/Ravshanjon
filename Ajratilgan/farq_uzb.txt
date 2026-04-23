@@ -1,0 +1,140 @@
+#Shu joyda to'xtab turishga ruxsat etiladimi?
++Ruxsat etiladi
+-Taqiqlanadi
+
+#Shu joyda hovliga burilishga ruxsat etiladimi?
++Ruxsat etiladi.
+-Taqiqlanadi
+
+#Tos suyaklari singanda birinchi yordam qanday ko'rsatiladi?
+-Zararlangan joyni qattiq bog'lash, shikastlanganni yarim o'tirgan holatga keltirish
+-Shikastlanganni qattiq yuzaga orqasi bilan yotqizish, zararlangan joylarga qaynoq isitgich qo'yish
++Shikastlanganni qattiq tekis yuzaga yotqizish, bukilgan va ikki tomonga kerilgan tizzalarining bo'g'inlari ostiga g'o'la shaklida o'ram qo'yish
+
+#Yon kajavasi bo'lmagan motosiklda bolalarni tashishga ruxsat etiladimi?
+-Ruxsat etiladi
++12 yoshga to'lgan va undan katta bolalarga ruxsat etiladi
+-Katta yoshdagi yo'lovchi bo'lganda ruxsat etiladi
+-Taqiqlanadi
+
+#Bu yotiq chiziq nimani anglatadi?
++Transport vositalari oqimi qo'shiladigan joylardagi yo'naltiruvchi orolchani
+-Qatnov qismidagi xavfli joylarda piyodalar uchun orolchani
+-Transport vositalari to'xtab turish qismining chegarasini
+-Transport vositalari oqimi ajraladigan joydagi yo'naltiruvchi orolchani
+
+#Serqatnov harakatda transport vositasini keskin tormozlash:
++Orqadan kelayotganlarning urib ketishini keltirib chiqarishi mumkin
+-Avtomobilning faqat texnik holatida ko'rinadi
+-Serqatnov harakatda boshqarishning odatdagi usuli hisoblanadi
+
+#Ko'rsatilgan belgilardan qay biri avtopoyezdni bildirish uchun o'rnatiladi?
+-Chap belgi
+-O'ng belgi
++Har ikki belgi
+
+#Mazkur taniqlik belgisi nimani bildiradi?
+-Oldinda qatnov qismi notekis bo'lgan yo'l qismini
+-Oldinda shu yo'nalishda harakatlanish uchun uch bo'lakli yo'l qismini
++Mexanik transport vositasida tishli turumlangan (shiplar) shinalar o'rnatilganini
+
+#Transport vositalari chorrahani quyidagi tartibda kesib o'tadilar:
++Qizil avtomobil, tramvay ayni vaqtda yashil avtomobil bilan
+-Tramvay, qizil, yashil avtomobillar
+-Tramvay, ayni vaqtda yashil avtomobil, qizil avtomobil
+
+#Ko'k avtomobilning haydovchisi qanday yo'l tutishi kerak?
+-Sariq avtomobilga u orqadan kelayotgani uchun yo'l bermay, mo'ljallangan yo'nalishda chorrahani kesib o'tishi
+-Qarama-qarshi harakat bo'lagiga darhol qayta tizilishi
++Tezlikni kamaytirishi, sariq avtomobilga quvib o'tishni tugallashiga imkon berishi, so'ng esa chapga burilishni ko'rsatadigan chiroqni yoqib, chapga burilishi lozim
+
+#Qizil avtomobilning haydovchisiga tramvay yo'li bo'yicha harakatlanishga ruxsat etiladimi?
++Ruxsat etiladi
+-Taqiqlangan
+
+#Agar avtomobilning balandligi (yuki bilan yoki yuksiz) belgida ko'rsatilganidan ortiq bo'lsa haydovchi:
+-Avtoxo'jalik rahbaridan yurishga ruxsat olishi kerak
+-DYHXXdan yurishga ruxsatnoma olishi kerak
++Boshqa yo'nalish bo'yicha yo'l qismini aylanib o'tishi kerak
+
+#Bu chorrahada chapga burilishga ruxsat etiladimi?
++Ruxsat etiladi
+-Taqiqlanadi
+
+#Bu joyda avtobusni quvib o'tishga ruxsat etiladimi?
++Ruxsat etiladi
+-Taqiqlanadi
+
+#Ushbu yo'l belgisi chorrahaga yaqinlashayotganlik to'g'risida ogohlantiradi, bunda Siz:
+-Birinchi bo'lib o'tish huquqiga egasiz
+-Kesib o'tayotgan yo'ldagi transport vositalariga yo'l berishingiz kerak
++Faqatgina o'ng tomondan yaqinlashib kelayotgan transport vositalariga yo'l berishingiz kerak
+
+#Avtomobilning antiblokirovka  tizimi (ABS)  burilishda  sirpanish   va yonga siljishni oldini oladimi?
+-Avtomobilni faqat  sirpanish  ehtimolining  oldini oladi
+-Avtomobilni faqat yonga siljish ehtimolining  oldini oladi
++Avtomobilning sirpanish va yonga tomonga sirpanishini  oldini olmaydi
+
+#Siz chapga burilmoqchisiz, kimga yo‘l berishingiz kerak?
+-Faqat avtobusga
+-Faqat yuk avtomobiliga
++Har  ikki transport  vositasiga
+
+#Cheklangan ko'rinish sharoitida orqaga harakatlanishda harakat xavfsizligini taminlash uchun:
+-Tovushli  signal  berish
+-Falokat yorug'lik ishoralarini yoqish
++Boshqa shaxslar yordamidan foydalanish
+
+#Agar avtomobilning o'ng g'ildiraklari nam qoplamali yo'l yoqasiga chiqib qolsa, tavsiya etiladi:
+-Avtomobilni tormozlash va to'liq to'xtatish
+-Avtomobilni tormozlab, yo'lning harakat qismiga ohista ravon burilish
++Avtomobilni tormozlamasdan yo'lning harakat qismiga ohista ravon burish
+
+#Ushbu qo'shimcha axborot yo'l belgisi:
++Obektgacha bo'lgan masofani bildiradi
+-Belgining tasir oralig'ini bildiradi
+
+#Agar avtomobilning o'ng g'ildiraklari nam qoplamali yo'l yoqasiga chiqib qolsa, tavsiya etiladi:
+-Avtomobilni tormozlash va to'liq to'xtatish
+-Avtomobilni tormozlab, yo'lning harakat qismiga ohista ravon burish
++Avtomobilni tormozlamasdan yo'lning harakat qismiga oxista ravon burish
+
+#Avtomobilning antiblokirovka tizimi (ABS) burilishda sirpanishva yonga siljishni oldini oladimi?
+-Avtomobilni faqat sirpanish ehtimolining oldini oladi
+-Avtomobilni faqat yonga siljish ehtimolining oldini oladi
++Avtomobilning sirpanish va yonga tomonga sirpanishini oldini olmaydi
+
+#Engil avtomobilning tom qismiga o'rnatilgan yukxonasida yuk tashishdan, yukning uzunligi avtomobilning gabaritidan necha metrdan oshmasa tashishga yo'l qo'yiladi?
+-2 metr
+-1 metr
+-1.2 metr
++0.5 metr
+
+#Mazkur yo'l belgisi:
+-Doimim belgi  xisoblanadi
++Vaqtinchalik belgi  xisoblanadi
+-Mavsumiy belgi xisoblanadi
+
+#Ushbu belgi qanday nomlanadi?
+-Suniy notekislik
+-Majburiy sekinlanish
++Baland piyodalar utish joyi
+
+#Ushbu chorrahada chapga burilishga ruxsat etiladimi?
++Ruxsat etiladi
+-Taqiqlanadi
+
+#Quyidagi joyda sariq avtomobilga quvib o‘tishga ruxsat beradimi?
++Ruxsat beriladi
+-Taqiqlanadi
+
+#Ushbu belgi qaysi moddalarga kiradi?
+-Toksik moddalar
+-Organik peroksidlar
++Oksidlovchi moddalar
+
+#Bu holatta siz qanday yo'l tutishingiz kerak?
+-Ovozli ishora berib, tezlikni oshiring
++Zarur bo'lganda tezlikni kamaytiradigan darajada kamaytiring
+-Chapga burilib, to‘siqni aylanib o‘ting
+-o‘xtovsiz harakatni davom ettiring
