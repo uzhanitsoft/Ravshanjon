@@ -624,8 +624,8 @@
 <div class="app" id="app">
   <!-- Header -->
   <div class="header">
-    <h1>рџљ— PDD Test Manager</h1>
-    <p>Yo'l harakati qoidalari вЂ” savollar bazasini boshqarish</p>
+    <h1>&#128663; PDD Test Manager</h1>
+    <p>Yo'l harakati qoidalari &mdash; savollar bazasini boshqarish</p>
   </div>
 
   <!-- Language Switcher -->
@@ -638,10 +638,10 @@
   <!-- Tabs -->
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('main')" id="tab-main">
-      рџ“‹ Asosiy <span class="badge" id="count-main">0</span>
+      &#128203; Asosiy <span class="badge" id="count-main">0</span>
     </button>
     <button class="tab-btn" onclick="switchTab('exc')" id="tab-exc">
-      вљ пёЏ Istisnolar <span class="badge" id="count-exc">0</span>
+      &#9888; Istisnolar <span class="badge" id="count-exc">0</span>
     </button>
   </div>
 
@@ -961,7 +961,7 @@ function showResults() {
   const total = Object.keys(state.answered).length;
   if (!total) return;
   const pct = Math.round((state.score.correct / total) * 100);
-  const emoji = pct >= 80 ? 'рџЋ‰' : pct >= 50 ? 'рџЉ' : 'рџ”';
+  const emoji = pct >= 80 ? '\u{1F389}' : pct >= 50 ? '\u{1F44D}' : '\u{1F4D6}';
   const msg = pct >= 80 ? 'Ajoyib natija!' : pct >= 50 ? 'Yomon emas!' : 'Ko\'proq mashq qiling!';
 
   const overlay = document.createElement('div');
@@ -973,7 +973,7 @@ function showResults() {
       <p>${msg}</p>
       <div class="score">${pct}%<span> (${state.score.correct}/${total})</span></div>
       <div style="margin-top:8px; font-size:14px; color:var(--text2)">
-        вњ… To'g'ri: ${state.score.correct} &nbsp; вќЊ Xato: ${state.score.wrong}
+        ✅ To'g'ri: ${state.score.correct} &nbsp; ❌ Xato: ${state.score.wrong}
       </div>
       <button class="nav-btn" style="margin-top:24px; width:100%" onclick="this.closest('.result-overlay').remove()">Yopish</button>
     </div>
@@ -1002,7 +1002,7 @@ function renderUploadZone() {
          ondragover="event.preventDefault(); this.classList.add('drag-over')"
          ondragleave="this.classList.remove('drag-over')"
          ondrop="event.preventDefault(); this.classList.remove('drag-over'); handleFile(event.dataTransfer.files[0])">
-      <div class="icon">рџ“Ѓ</div>
+      <div class="icon">\u{1F4C2}</div>
       <h3>JSON faylni yuklang</h3>
       <p>Fayl tanlash uchun bosing yoki shu yerga tashlang</p>
       <input type="file" id="file-input" accept=".json" onchange="handleFile(this.files[0])">
@@ -1031,10 +1031,10 @@ function renderQuestion() {
 
     <!-- Mode Bar -->
     <div class="mode-bar">
-      <button class="mode-btn ${state.mode==='test'?'active':''}" onclick="state.mode='test'; render()">рџ§Є Test</button>
-      <button class="mode-btn ${state.mode==='list'?'active':''}" onclick="state.mode='list'; render()">рџ“ѓ Ro'yxat</button>
+      <button class="mode-btn ${state.mode==='test'?'active':''}" onclick="state.mode='test'; render()">Test</button>
+      <button class="mode-btn ${state.mode==='list'?'active':''}" onclick="state.mode='list'; render()">Ro'yxat</button>
       <div class="spacer"></div>
-      <button class="mode-btn" onclick="document.getElementById('file-input2').click()">рџ“Ѓ Fayl yuklash</button>
+      <button class="mode-btn" onclick="document.getElementById('file-input2').click()">\u{1F4C2} Fayl yuklash</button>
       <input type="file" id="file-input2" accept=".json" style="display:none" onchange="handleFile(this.files[0])">
     </div>
 
@@ -1059,8 +1059,8 @@ function renderQuestion() {
     <div class="question-card" key="${q.id}">
       <div class="q-header">
         <span class="q-number">Savol ${state.currentIndex+1} / ${questions.length}</span>
-        <span class="q-bilet">Bilet #${q.bilet_id} вЂў ID: ${q.id}</span>
-        <button class="q-move-btn" onclick="moveQuestion(${q.id})">в†— ${otherTab} ko'chirish</button>
+        <span class="q-bilet">Bilet #${q.bilet_id} • ID: ${q.id}</span>
+        <button class="q-move-btn" onclick="moveQuestion(${q.id})">-> ${otherTab} ko'chirish</button>
       </div>
 
       <div class="q-text">${escapeHtml(q.savol)}</div>
@@ -1087,15 +1087,15 @@ function renderQuestion() {
         background: ${ans.correct ? 'var(--green-bg)' : 'var(--red-bg)'};
         border: 1px solid ${ans.correct ? 'var(--green-border)' : 'var(--red-border)'};
         color: ${ans.correct ? 'var(--green)' : 'var(--red)'}">
-        ${ans.correct ? 'вњ… To\'g\'ri javob!' : `вќЊ Xato! To'g'ri javob: ${letters[correctIdx]}. ${escapeHtml(q.answers[correctIdx].text)}`}
+        ${ans.correct ? '✅ To\'g\'ri javob!' : `❌ Xato! To'g'ri javob: ${letters[correctIdx]}. ${escapeHtml(q.answers[correctIdx].text)}`}
       </div>` : ''}
     </div>
 
     <!-- Navigation -->
     <div class="nav-bar">
-      <button class="nav-btn secondary" onclick="prevQuestion()" ${state.currentIndex===0?'disabled':''}>в†ђ Oldingi</button>
+      <button class="nav-btn secondary" onclick="prevQuestion()" ${state.currentIndex===0?'disabled':''}><- Oldingi</button>
       <button class="nav-btn" onclick="nextQuestion()">
-        ${state.currentIndex < questions.length-1 ? 'Keyingi в†’' : 'рџЏЃ Yakunlash'}
+        ${state.currentIndex < questions.length-1 ? 'Keyingi \u2192' : '\u{1F3C1} Yakunlash'}
       </button>
     </div>
   `;
@@ -1117,12 +1117,12 @@ function renderList() {
     </div>
 
     <div class="mode-bar">
-      <button class="mode-btn ${state.mode==='test'?'active':''}" onclick="state.mode='test'; render()">рџ§Є Test</button>
-      <button class="mode-btn ${state.mode==='list'?'active':''}" onclick="state.mode='list'; render()">рџ“ѓ Ro'yxat</button>
+      <button class="mode-btn ${state.mode==='test'?'active':''}" onclick="state.mode='test'; render()">Test</button>
+      <button class="mode-btn ${state.mode==='list'?'active':''}" onclick="state.mode='list'; render()">Ro'yxat</button>
       <div class="spacer"></div>
-      <input class="search-input" type="text" placeholder="рџ”Ќ Qidirish..." value="${state.searchTerm}"
+      <input class="search-input" type="text" placeholder="Qidirish..." value="${state.searchTerm}"
              oninput="state.searchTerm=this.value; renderList()">
-      <button class="mode-btn" onclick="document.getElementById('file-input3').click()">рџ“Ѓ Fayl</button>
+      <button class="mode-btn" onclick="document.getElementById('file-input3').click()">Fayl</button>
       <input type="file" id="file-input3" accept=".json" style="display:none" onchange="handleFile(this.files[0])">
     </div>
 
@@ -1137,7 +1137,7 @@ function renderList() {
       `).join('')}
     </div>` : `
     <div class="empty-state">
-      <div class="icon">рџ”Ќ</div>
+      <div class="icon">&#128270;</div>
       <h3>Hech narsa topilmadi</h3>
       <p>Qidiruv so'zini o'zgartiring</p>
     </div>`}
