@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="uz">
 <head>
   <meta charset="UTF-8">
@@ -719,6 +719,36 @@ function handleFile(file) {
   reader.onload = (e) => {
     try {
       let data = JSON.parse(e.target.result);
+
+      // NEW FORMAT: { uzb: [...], kril: [...], rus: [...] }
+      if (data && !Array.isArray(data) && (data.uzb || data.kril || data.rus)) {
+        // Har bir tilni bitta arrayga normalize qilib qo'shamiz
+        const allLangs = ['uzb', 'kril', 'rus'];
+        let combined = [];
+        for (const lang of allLangs) {
+          if (data[lang] && Array.isArray(data[lang])) {
+            combined = data[lang].map((q, i) => normalizeQuestion(q, i));
+            break; // birinchi mavjud tilni yuklaymiz
+          }
+        }
+        if (!combined.length) {
+          showToast('JSON formatida savollar topilmadi!', 'warn');
+          return;
+        }
+        if (state.currentTab === 'main') state.mainQuestions = combined;
+        else state.excQuestions = combined;
+        state.currentIndex = 0;
+        state.answered = {};
+        state.score = { correct: 0, wrong: 0 };
+        // rawData ni saqlaymiz til almashtirish uchun
+        window._rawNewFormat = data;
+        updateCounts();
+        showToast(`${combined.length} ta savol yuklandi!`, 'success');
+        render();
+        return;
+      }
+
+      // OLD FORMAT: array
       if (!Array.isArray(data)) {
         showToast('JSON massiv formatida bo\'lishi kerak!', 'warn');
         return;
@@ -730,6 +760,7 @@ function handleFile(file) {
       state.currentIndex = 0;
       state.answered = {};
       state.score = { correct: 0, wrong: 0 };
+      window._rawNewFormat = null;
       updateCounts();
       showToast(`${data.length} ta savol yuklandi!`, 'success');
       render();
