@@ -33,13 +33,31 @@ const App = {
     Sync.init();
 
     // Load questions from IndexedDB/localStorage
-    const savedQ = await Storage.loadQuestions();
+    let savedQ = await Storage.loadQuestions();
+
+    // Auto-load from server if no saved questions
+    if (!savedQ) {
+      try {
+        const resp = await fetch('/pdd_savollar_barchasi.json');
+        if (resp.ok) {
+          const serverData = await resp.json();
+          if (serverData && (Array.isArray(serverData) ? serverData.length > 0 : (serverData.uzb || serverData.kril || serverData.rus))) {
+            savedQ = serverData;
+            await Storage.saveQuestions(serverData);
+            console.log('Auto-loaded questions from server');
+          }
+        }
+      } catch(e) {
+        console.log('Auto-load from server failed:', e.message);
+      }
+    }
+
     if (savedQ) {
       if (this.isNewFormat(savedQ)) {
         this.rawData = savedQ;
         this.loadFromNewFormat(savedQ);
       } else if (Array.isArray(savedQ) && savedQ.length) {
-        this.questions = savedQ;
+        this.questions = this.normalizeQuestions(savedQ);
         this.buildBilets();
       }
     }
